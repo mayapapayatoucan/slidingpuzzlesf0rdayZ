@@ -4,7 +4,7 @@ import java.util.*;
 
 public class Block {
 	
-	private int trow, brow, lcol, rcol;
+	public int trow, brow, lcol, rcol;
 	
 	public Block(String s){
 		String[] points = s.split(" ");
@@ -30,6 +30,14 @@ public class Block {
 		}
 	}
 
+	public void move (int newTopRow, int newLeftCol) {
+		int rowShift = trow - newTopRow;
+		int colShift = lcol - newLeftCol;
+		trow = newTopRow;
+		lcol = newLeftCol;
+		brow = brow + rowShift;
+		rcol = rcol + colShift;
+	}
 
 	public int width() {
 		return rcol - lcol;
