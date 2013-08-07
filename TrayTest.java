@@ -6,8 +6,46 @@ import org.junit.Test;
 
 
 public class TrayTest {
-
-  @Test
+	
+	@Test
+	public void testIsOK() {
+		Tray t1 = new Tray(1, 1);
+		Block b = new Block("0 0 0 0");
+		t1.addBlock(b);
+		t1.addBlock(b);
+		try {
+			t1.isOK();   // two overlapping blocks
+			fail();
+		} catch (IllegalStateException e) {
+			
+		}
+		Tray t2 = new Tray(1, 1);
+		Block b1 = new Block("0 0 0 0");
+		Block b2 = new Block("0 1 0 1");
+		Block b3 = new Block("1 0 1 0");
+		Block b4 = new Block("1 1 1 1");
+		t1.addBlock(b1);
+		t1.addBlock(b2);
+		t1.addBlock(b3);
+		t1.addBlock(b4);
+		try {
+			t1.isOK();   // nowhere to move
+			fail();
+		} catch (IllegalStateException e) {
+			
+		}
+	}
+	
+	@Test
+	public void testContainsBlock() {
+		Tray t1 = new Tray(4, 3);
+		Block b1 = new Block("0 0 0 0");
+		t1.addBlock(b1);
+		assertTrue(t1.containsBlock(0, 0, 0, 0));
+		assertFalse(t1.containsBlock(1, 1, 1, 1));
+	}
+	
+	@Test
 	public void testValidMove() {
 		Tray t1 = new Tray(4, 3);
 		Block b1 = new Block("1 1 1 1");
