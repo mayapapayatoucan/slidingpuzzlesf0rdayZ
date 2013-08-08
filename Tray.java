@@ -15,11 +15,12 @@ public class Tray {
 	public Tray() {
 	}
 	
-	public Tray(int width, int height) {
-		trayWidth = width;
-		trayHeight = height;
+	public Tray(int numRows, int numCols) {
+		
+		trayHeight = numRows;
+		trayWidth = numCols;
 
-		occupied = new Block[(trayWidth + 1) * (trayHeight + 1)];
+		occupied = new Block[(trayWidth) * (trayHeight)];
 	}
 	
 	public void addBlock (Block b) {
@@ -29,10 +30,10 @@ public class Tray {
 			//POPULATE MATRIX OF OCCUPIED SPACES
 			for (int i = b.trow(); i <= b.brow(); i++) {
 				for (int j = b.lcol(); j <= b.rcol(); j++) {
-					System.out.println("i: " + i);
-					System.out.println("j: " + j);
-					System.out.println("index: " + (j + i*trayWidth));
-					System.out.println("occupied.length: " + occupied.length);
+					//System.out.println("i: " + i);
+					//System.out.println("j: " + j);
+					//System.out.println("index: " + (j + i*trayWidth));
+					//System.out.println("occupied.length: " + occupied.length);
 					if (occupied[j + i*trayWidth] != null) {
 						throw new IllegalStateException("Cannot add block to occupied space.");
 					}
@@ -168,8 +169,8 @@ public class Tray {
 				//Integer[] coordinates = {Integer.valueOf(block.trow()), Integer.valueOf(block.lcol()), Integer.valueOf(block.brow()), Integer.valueOf(block.rcol())};
 				//visited[index] = coordinates;
 				for (Block otherBlock : blocks) {
-					System.out.println("block: " + block);
-					System.out.println("otherBlock: " + otherBlock);
+					//System.out.println("block: " + block);
+					//System.out.println("otherBlock: " + otherBlock);
 					if (!(otherBlock == block) && block.overlapping(otherBlock.trow(), otherBlock.lcol(), otherBlock.brow(), otherBlock.rcol())) {
 						throw new IllegalStateException("Two blocks are in the same location");
 					}
@@ -183,9 +184,11 @@ public class Tray {
 				}
 			}
 			for (Block block : occupied) {
-				System.out.println(blocks);
-				if (!blocks.contains(block)) {
-					throw new IllegalStateException("Block incorrectly added");
+				//System.out.println(blocks);
+				if (block != null) {
+					if (!blocks.contains(block)) {
+						throw new IllegalStateException("Block incorrectly added");
+					}
 				}
 			}
 			if (!moveExists) {
@@ -196,9 +199,5 @@ public class Tray {
 	
 	public ArrayList<Block> getBlocks() {
 		return blocks;
-	}
-	
-	public Block[] getOccupied() {
-		return occupied;
 	}
 }
