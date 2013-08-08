@@ -10,7 +10,7 @@ public class Tray {
 
 	private ArrayList<Block> goalBlocks = new ArrayList<Block>();
 	private ArrayList<Block> blocks = new ArrayList<Block>();
-	private boolean[] occupied; //ROW-MAJOR
+	private Block[] occupied; //ROW-MAJOR
 	
 	public Tray() {
 	}
@@ -19,7 +19,7 @@ public class Tray {
 		trayWidth = width;
 		trayHeight = height;
 
-		occupied = new boolean[trayWidth*trayHeight];
+		occupied = new Block[(trayWidth + 1) * (trayHeight + 1)];
 	}
 	
 	public void addBlock (Block b) {
@@ -29,11 +29,14 @@ public class Tray {
 			//POPULATE MATRIX OF OCCUPIED SPACES
 			for (int i = b.trow(); i <= b.brow(); i++) {
 				for (int j = b.lcol(); j <= b.rcol(); j++) {
-				
-					if (occupied[j + i*trayWidth]) {
+					System.out.println("i: " + i);
+					System.out.println("j: " + j);
+					System.out.println("index: " + (j + i*trayWidth));
+					System.out.println("occupied.length: " + occupied.length);
+					if (occupied[j + i*trayWidth] != null) {
 						throw new IllegalStateException("Cannot add block to occupied space.");
 					}
-					occupied[j + i*trayWidth] = true;
+					occupied[j + i*trayWidth] = b;
 				}
 			}
 
@@ -57,7 +60,7 @@ public class Tray {
 
 		for (int i = 0; i < trayHeight; i++) {
 			for (int j = 0; j < trayWidth; j++) {
-				if (occupied[j + i*trayWidth]) {
+				if (occupied[j + i*trayWidth] != null) {
 					System.out.print("1 ");
 				}
 				else {
@@ -75,7 +78,7 @@ public class Tray {
 
 			for (int i = b.trow(); i <= b.brow(); i++) {
 					for (int j = b.lcol(); j <= b.rcol(); j++) {
-						occupied[j + i*trayWidth] = false;
+						occupied[j + i*trayWidth] = null;
 						if (debug) {
 						}
 					}
@@ -83,7 +86,7 @@ public class Tray {
 
 			for (int i = row; i <= row + b.height(); i++) {
 				for (int j = col; j <= col + b.width(); j++) {
-					occupied[j + i*trayWidth] = true;
+					occupied[j + i*trayWidth] = b;
 						if (debug) {
 						}
 				}
@@ -99,7 +102,7 @@ public class Tray {
 	
 	public boolean containsBlock (int topRow, int leftCol, int bottomRow, int rightCol) {
 		for (Block block: blocks) {
-			if (block.trow == topRow && block.lcol == leftCol && block.brow == bottomRow && block.rcol == rightCol) {
+			if (block.trow() == topRow && block.lcol() == leftCol && block.brow() == bottomRow && block.rcol() == rightCol) {
 				return true;
 			}
 		}
@@ -108,7 +111,7 @@ public class Tray {
 	
 	public boolean containsGoalBlock (int topRow, int leftCol, int bottomRow, int rightCol) {
 		for (Block block: goalBlocks) {
-			if (block.trow == topRow && block.lcol == leftCol && block.brow == bottomRow && block.rcol == rightCol) {
+			if (block.trow() == topRow && block.lcol() == leftCol && block.brow() == bottomRow && block.rcol() == rightCol) {
 				return true;
 			}
 		}
@@ -132,17 +135,8 @@ public class Tray {
 		int rcolDest = lcolDest + b.width();
 
 		for (Block block : blocks) {
-			if (!b.equals(block)) {
-				if (trowDest <= block.brow() && browDest >= block.trow()) {
-					if (rcolDest >= block.lcol() && lcolDest <= block.rcol()) {
-						
-							//DEBUG
-							if (debug) {
-								System.out.println("Cockblocked by: " + block.trow() + ", " + block.lcol());
-							}
-							return false;
-						}
-				}
+			if (!b.equals(block) && block.overlapping(trowDest, lcolDest, browDest, rcolDest)) {
+				return false;
 			}
 		}
 		return true;
@@ -158,29 +152,41 @@ public class Tray {
 	
 	public void isOK() {
 		if (debug) {
-			Integer[][] visited = new Integer[blocks.size()][4];
-			int index = 0;
+			//Integer[][] visited = new Integer[blocks.size()][4];
+			//int index = 0;
 			boolean moveExists = false;
+			if (blocks.size() < goalBlocks.size()) {
+				throw new IllegalStateException("More goal blocks than blocks on the board");
+			}
 			for (Block block : blocks) {
-				if (block.trow < 0 || block.brow > trayHeight || block.lcol < 0 || block.rcol > trayWidth) {
+				if (block.trow() < 0 || block.brow() > trayHeight || block.lcol() < 0 || block.rcol() > trayWidth) {
 					throw new IllegalStateException("Block not in board");
 				}
-				Integer[] coordinates = {Integer.valueOf(block.trow), Integer.valueOf(block.lcol), Integer.valueOf(block.brow), Integer.valueOf(block.rcol)};
-				visited[index] = coordinates;
-				for (Integer[] visitedCoordinates : visited) {
-					System.out.println(Arrays.deepToString(visited));
-					if (coordinates.equals(visitedCoordinates)) {
-						throw new IllegalStateException("Two blocks are in the same location");   // doesn't catch if they overlap but aren't in same location -- how to check?
+				if (!Arrays.asList(occupied).contains(block)) {
+					throw new IllegalStateException("Block incorrectly added");
+				}
+				//Integer[] coordinates = {Integer.valueOf(block.trow()), Integer.valueOf(block.lcol()), Integer.valueOf(block.brow()), Integer.valueOf(block.rcol())};
+				//visited[index] = coordinates;
+				for (Block otherBlock : blocks) {
+					System.out.println("block: " + block);
+					System.out.println("otherBlock: " + otherBlock);
+					if (!(otherBlock == block) && block.overlapping(otherBlock.trow(), otherBlock.lcol(), otherBlock.brow(), otherBlock.rcol())) {
+						throw new IllegalStateException("Two blocks are in the same location");
 					}
 				}
-				for (int i = block.trow - 1; i < block.brow + 1; i++) {
-					for (int j = block.lcol - 1; j < block.rcol + 1; j++) {
+				for (int i = block.trow() - 1; i < block.brow() + 1; i++) {
+					for (int j = block.lcol() - 1; j < block.rcol() + 1; j++) {
 						if (validMove(block, i, j)) {
 							moveExists = true;
 						}
 					}
 				}
-				index++;
+			}
+			for (Block block : occupied) {
+				System.out.println(blocks);
+				if (!blocks.contains(block)) {
+					throw new IllegalStateException("Block incorrectly added");
+				}
 			}
 			if (!moveExists) {
 				throw new IllegalStateException("No valid moves");
