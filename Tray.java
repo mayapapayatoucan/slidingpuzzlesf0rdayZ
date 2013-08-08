@@ -197,4 +197,8 @@ public class Tray {
 	public ArrayList<Block> getBlocks() {
 		return blocks;
 	}
+	
+	public Block[] getOccupied() {
+		return occupied;
+	}
 }
