@@ -9,30 +9,51 @@ public class TrayTest {
 	
 	@Test
 	public void testIsOK() {
-		Tray t1 = new Tray(1, 1);
+		Tray t1 = new Tray(2, 2);
 		Block b = new Block("0 0 0 0");
 		t1.addBlock(b);
-		t1.addBlock(b);
-		try {
-			t1.isOK();   // two overlapping blocks
-			fail();
-		} catch (IllegalStateException e) {
-			
-		}
-		Tray t2 = new Tray(1, 1);
+		assertFalse(testIsOKHelper(t1));
+		testAddBlockHelper(t1, b);
+		Tray t2 = new Tray(2, 2);
 		Block b1 = new Block("0 0 0 0");
 		Block b2 = new Block("0 1 0 1");
 		Block b3 = new Block("1 0 1 0");
 		Block b4 = new Block("1 1 1 1");
-		t1.addBlock(b1);
-		t1.addBlock(b2);
-		t1.addBlock(b3);
-		t1.addBlock(b4);
+		t2.addBlock(b1);
+		t2.addBlock(b2);
+		t2.addBlock(b3);
+		t2.addBlock(b4);
+		assertFalse(testIsOKHelper(t2));
+		Tray t3 = new Tray(5, 5);
+		Block center = new Block("1 1 2 2");
+		Block b5 = new Block("0 1 1 1");   // top overlap
+		Block b6 = new Block("1 1 1 2");   // right overlap
+		Block b7 = new Block("2 0 2 1");   // left overlap
+		Block b8 = new Block("2 2 3 2");   // bottom overlap
+		t3.addBlock(center);
+		testAddBlockHelper(t3, b5);
+		testAddBlockHelper(t3, b6);
+		testAddBlockHelper(t3, b7);
+		testAddBlockHelper(t3, b8);
+		assertTrue(testIsOKHelper(t3));
+	}
+	
+	public void testAddBlockHelper (Tray t, Block b) {
 		try {
-			t1.isOK();   // nowhere to move
+			t.addBlock(b);
 			fail();
 		} catch (IllegalStateException e) {
 			
+		}
+	}
+	
+	public boolean testIsOKHelper (Tray t) {
+		try {
+			t.isOK();
+			return false;
+		} catch (IllegalStateException e) {
+			System.out.println(e.getMessage());
+			return true;
 		}
 	}
 	
@@ -58,10 +79,10 @@ public class TrayTest {
 		t1.addBlock(b3);
 		t1.addBlock(b4);
 		t1.addBlock(b5);
-		assertFalse(t1.validMove(b1, b2.trow, b2.lcol));   // can't move up when already occupied
-		assertFalse(t1.validMove(b1, b3.trow, b3.lcol));   // can't move left when already occupied
-		assertFalse(t1.validMove(b1, b4.trow, b4.lcol));   // can't move down when already occupied
-		assertFalse(t1.validMove(b1, b5.trow, b5.lcol));   // can't move right when already occupied
+		assertFalse(t1.validMove(b1, b2.trow(), b2.lcol()));   // can't move up when already occupied
+		assertFalse(t1.validMove(b1, b3.trow(), b3.lcol()));   // can't move left when already occupied
+		assertFalse(t1.validMove(b1, b4.trow(), b4.lcol()));   // can't move down when already occupied
+		assertFalse(t1.validMove(b1, b5.trow(), b5.lcol()));   // can't move right when already occupied
 		assertFalse(t1.validMove(b1, 0, 2));   // can't move diagonally (up-right)
 		assertFalse(t1.validMove(b1, 0, 0));   // can't move diagonally (up-left)
 		assertFalse(t1.validMove(b1, 2, 0));   // can't move diagonally (down-left)
@@ -72,7 +93,7 @@ public class TrayTest {
 		assertTrue(t2.validMove(b6, 0, 1));   // can move into adjacent empty space
 		assertFalse(t2.validMove(b6, -1, 0));  // can't move off the board
 		assertFalse(t2.validMove(b6, 0, -1));  // can't move off the board
-		Block b7 = new Block("4 3 4 3");
+		Block b7 = new Block("3 2 3 2");
 		t2.addBlock(b7);
 		assertFalse(t2.validMove(b7, 5, 3));  // can't move off the board
 		assertFalse(t2.validMove(b7, 4, 4));  // can't move off the board
