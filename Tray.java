@@ -4,9 +4,13 @@ import java.util.*;
 public class Tray {
 	
 	private boolean debug = true;
-	private ArrayList<Block> blocks = new ArrayList<Block>();
+
 	private int trayWidth;
 	private int trayHeight;
+
+
+	private ArrayList<Block> blocks = new ArrayList<Block>();
+	private boolean[] occupied; //ROW-MAJOR
 	
 	public Tray() {
 	}
@@ -14,16 +18,77 @@ public class Tray {
 	public Tray(int width, int height) {
 		trayWidth = width;
 		trayHeight = height;
+
+		occupied = new boolean[trayWidth*trayHeight];
 	}
 	
 	public void addBlock (Block b) {
 		if (b != null){
+
+
+			//POPULATE MATRIX OF OCCUPIED SPACES
+			for (int i = b.trow(); i <= b.brow(); i++) {
+				for (int j = b.lcol(); j <= b.rcol(); j++) {
+				
+					if (occupied[j + i*trayWidth]) {
+						throw new IllegalStateException("Cannot add block to occupied space.");
+					}
+					occupied[j + i*trayWidth] = true;
+				}
+			}
+
 			blocks.add(b);
+			
+
+			//FOR DEBUGGING
+			if (debug) {
+				printOccupied();
+			}
 		}
 	}
+
+	private void printOccupied() {
+
+		for (int i = 0; i < trayHeight; i++) {
+			for (int j = 0; j < trayWidth; j++) {
+				if (occupied[j + i*trayWidth]) {
+					System.out.print("1 ");
+				}
+				else {
+					System.out.print("0 ");
+				}
+			}
+			System.out.println("");
+		}
+		System.out.println("");
+
+	}
 	
-	private void moveBlock (Block b, int row, int col) {
-		b.move(row, col);
+	public void moveBlock (Block b, int row, int col) {
+		if (validMove(b, row, col)) {
+
+			for (int i = b.trow(); i <= b.brow(); i++) {
+					for (int j = b.lcol(); j <= b.rcol(); j++) {
+						occupied[j + i*trayWidth] = false;
+						if (debug) {
+						}
+					}
+			}
+
+			for (int i = row; i <= row + b.height(); i++) {
+				for (int j = col; j <= col + b.width(); j++) {
+					occupied[j + i*trayWidth] = true;
+						if (debug) {
+						}
+				}
+			}
+
+			b.move(row, col);
+
+			if (debug) {
+				printOccupied();
+			}
+		}
 	}
 	
 	public boolean containsBlock (int topRow, int leftCol, int bottomRow, int rightCol) {
