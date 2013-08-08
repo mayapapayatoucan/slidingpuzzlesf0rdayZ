@@ -3,12 +3,12 @@ import java.util.*;
 
 public class Tray {
 	
-	private boolean debug = true;
+	public boolean debug = true;
 
 	private int trayWidth;
 	private int trayHeight;
 
-
+	private ArrayList<Block> goalBlocks = new ArrayList<Block>();
 	private ArrayList<Block> blocks = new ArrayList<Block>();
 	private boolean[] occupied; //ROW-MAJOR
 	
@@ -44,6 +44,12 @@ public class Tray {
 			if (debug) {
 				printOccupied();
 			}
+		}
+	}
+	
+	public void addGoalBlock (Block b) {
+		if (b != null) {
+			goalBlocks.add(b);
 		}
 	}
 
@@ -93,6 +99,15 @@ public class Tray {
 	
 	public boolean containsBlock (int topRow, int leftCol, int bottomRow, int rightCol) {
 		for (Block block: blocks) {
+			if (block.trow == topRow && block.lcol == leftCol && block.brow == bottomRow && block.rcol == rightCol) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	public boolean containsGoalBlock (int topRow, int leftCol, int bottomRow, int rightCol) {
+		for (Block block: goalBlocks) {
 			if (block.trow == topRow && block.lcol == leftCol && block.brow == bottomRow && block.rcol == rightCol) {
 				return true;
 			}
@@ -171,5 +186,9 @@ public class Tray {
 				throw new IllegalStateException("No valid moves");
 			}
 		}
+	}
+	
+	public ArrayList<Block> getBlocks() {
+		return blocks;
 	}
 }
