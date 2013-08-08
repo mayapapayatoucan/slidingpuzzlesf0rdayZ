@@ -4,7 +4,8 @@ import java.util.*;
 
 public class Block {
 	
-	public int trow, brow, lcol, rcol;
+	public boolean debug;
+	private int trow, brow, lcol, rcol;
 	
 	public Block(String s){
 		String[] points = s.split(" ");
@@ -37,6 +38,20 @@ public class Block {
 		lcol = newLeftCol;
 		brow = brow - rowShift;
 		rcol = rcol - colShift;
+	}
+	
+	public boolean overlapping (int trowDest, int lcolDest, int browDest, int rcolDest) {
+		int rowDest = trowDest + height();
+		int colDest = lcolDest + width();
+		return (trowDest <= brow()) && (browDest >= trow()) && (rcolDest >= lcol()) && (lcolDest <= rcol());
+	}
+	
+	public String toString() {
+		return "trow: " + trow + " lcol: " + lcol + " brow: " + brow + " rcol: " + rcol;
+	}
+	
+	public boolean equals (Block b) {
+		return (trow == b.trow) && (lcol == b.lcol) && (brow == b.brow) && (rcol == b.rcol);
 	}
 
 	public int width() {
