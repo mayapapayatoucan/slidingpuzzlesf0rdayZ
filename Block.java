@@ -35,8 +35,8 @@ public class Block {
 		int colShift = lcol - newLeftCol;
 		trow = newTopRow;
 		lcol = newLeftCol;
-		brow = brow + rowShift;
-		rcol = rcol + colShift;
+		brow = brow - rowShift;
+		rcol = rcol - colShift;
 	}
 
 	public int width() {
