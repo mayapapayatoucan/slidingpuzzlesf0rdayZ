@@ -8,6 +8,7 @@ public class Tray {
 	private int trayWidth;
 	private int trayHeight;
 
+
 	private ArrayList<Block> goalBlocks = new ArrayList<Block>();
 	private ArrayList<Block> blocks = new ArrayList<Block>();
 	private Block[] occupied; //ROW-MAJOR
@@ -22,7 +23,7 @@ public class Tray {
 
 		occupied = new Block[(trayWidth) * (trayHeight)];
 	}
-	
+
 	public void addBlock (Block b) {
 		if (b != null){
 
@@ -50,6 +51,10 @@ public class Tray {
 			}
 		}
 	}
+
+	public Block[] getOccupied ( ) {
+		return occupied;
+	}
 	
 	public void addGoalBlock (Block b) {
 		if (b != null) {
@@ -57,7 +62,7 @@ public class Tray {
 		}
 	}
 
-	private void printOccupied() {
+	public void printOccupied() {
 
 		for (int i = 0; i < trayHeight; i++) {
 			for (int j = 0; j < trayWidth; j++) {
@@ -108,6 +113,15 @@ public class Tray {
 			}
 		}
 		return false;
+	}
+
+	public Tray copy ( ) {
+		Tray copyTray = new Tray(height(), width());
+		copyTray.goalBlocks = new ArrayList<Block> (goalBlocks);
+		for (Block block : blocks) {
+			copyTray.addBlock(block);
+		}
+		return copyTray;
 	}
 	
 	public boolean containsGoalBlock (int topRow, int leftCol, int bottomRow, int rightCol) {
@@ -200,4 +214,80 @@ public class Tray {
 	public ArrayList<Block> getBlocks() {
 		return blocks;
 	}
+
+/*
+	public ArrayList<Tray> posMoves() {
+		ArrayList<Tray> babies = new ArrayList<Tray>;
+
+		for(int i; i < occupied.length; i++) {
+			int row = i/width;
+			int col = i%width;
+
+
+			if (occupied[i] == null) {
+
+
+
+				//emptyspace on the LHS border of tray, so don't check element left of it
+				if (i%width == 0) {
+
+					//check right
+					if (occupied[i+1] != null) {
+						if (validMove(occupied[i+1], row, col)){
+							Tray t = this.copy();
+							t.moveBlock(t.occupied[i+1], row, col);
+							
+						}
+
+					}
+
+					//check up
+					if (i-width-1 > 0 ) {
+						if (occupied[i-width-1] != null) {
+							if (validMove(occupied[i-width-1], row, col)){
+								Tray t = this.copy();
+								t.moveBlock(t.occupied[i-width-1], row, col);
+							
+						}
+
+
+					}
+
+
+
+
+					}
+
+
+					}
+
+
+
+
+
+
+				}
+
+				//emptyspace on RHS border of tray, so don't check element to the right
+				if (i%width == width-1) {
+
+				}
+
+
+
+
+
+
+
+
+
+
+			}
+
+
+		}
+
+
+
+	}*/
 }
