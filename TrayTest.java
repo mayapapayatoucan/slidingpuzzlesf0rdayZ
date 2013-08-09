@@ -80,10 +80,6 @@ public class TrayTest {
 		t1.addBlock(b4);
 		t1.addBlock(b5);
 		
-
-		
-		
-		
 		assertFalse(t1.validMove(b1, b2.trow(), b2.lcol()));   // can't move up when already occupied
 		assertFalse(t1.validMove(b1, b3.trow(), b3.lcol()));   // can't move left when already occupied
 		assertFalse(t1.validMove(b1, b4.trow(), b4.lcol()));   // can't move down when already occupied
@@ -92,6 +88,7 @@ public class TrayTest {
 		assertFalse(t1.validMove(b1, 0, 0));   // can't move diagonally (up-left)
 		assertFalse(t1.validMove(b1, 2, 0));   // can't move diagonally (down-left)
 		assertFalse(t1.validMove(b1, 2, 2));   // can't move diagonally (down-right)
+		assertFalse(t1.validMove(b3, 3, 0));   // can't move more than one space
 		Tray t2 = new Tray(4, 3);
 		Block b6 = new Block("0 0 1 0");
 		t2.addBlock(b6);
