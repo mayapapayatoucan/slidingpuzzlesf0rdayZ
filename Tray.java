@@ -219,16 +219,6 @@ public class Tray {
 		if ((height() != t.height()) || (width() != t.width())) {
 			return false;
 		}
-		if (!blocks.equals(t.getBlocks())) {
-			return false;
-		}
-		return true;
-	}
-
-		public boolean equals (Tray t) {
-		if ((height() != t.height()) || (width() != t.width())) {
-			return false;
-		}
 		boolean inOther;
 		for (Block block : blocks) {
 			inOther = false;
