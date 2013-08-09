@@ -214,6 +214,46 @@ public class Tray {
 	public ArrayList<Block> getBlocks() {
 		return blocks;
 	}
+	
+	public boolean equals (Tray t) {
+		if ((height() != t.height()) || (width() != t.width())) {
+			return false;
+		}
+		if (!blocks.equals(t.getBlocks())) {
+			return false;
+		}
+		return true;
+	}
+
+		public boolean equals (Tray t) {
+		if ((height() != t.height()) || (width() != t.width())) {
+			return false;
+		}
+		boolean inOther;
+		for (Block block : blocks) {
+			inOther = false;
+			for (Block otherBlock : t.getBlocks()) {
+				if (block.equals(otherBlock)) {
+					inOther = true;
+				}
+			}
+			if (!inOther) {
+				return false;
+			}
+		}
+		for (Block block : t.getBlocks()) {
+			inOther = false;
+			for (Block otherBlock : blocks) {
+				if (block.equals(otherBlock)) {
+					inOther = true;
+				}
+			}
+			if (!inOther) {
+				return false;
+			}
+		}
+		return true;
+	}
 
 /*
 	public ArrayList<Tray> posMoves() {
