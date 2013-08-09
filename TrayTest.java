@@ -6,7 +6,7 @@ import org.junit.Test;
 
 
 public class TrayTest {
-	
+
 	@Test
 	public void testIsOK() {
 		Tray t1 = new Tray(2, 2);
@@ -37,16 +37,16 @@ public class TrayTest {
 		testAddBlockHelper(t3, b8);
 		assertTrue(testIsOKHelper(t3));
 	}
-	
+
 	public void testAddBlockHelper (Tray t, Block b) {
 		try {
 			t.addBlock(b);
 			fail();
 		} catch (IllegalStateException e) {
-			
+
 		}
 	}
-	
+
 	public boolean testIsOKHelper (Tray t) {
 		try {
 			t.isOK();
@@ -56,7 +56,7 @@ public class TrayTest {
 			return true;
 		}
 	}
-	
+
 	@Test
 	public void testContainsBlock() {
 		Tray t1 = new Tray(4, 3);
@@ -65,7 +65,7 @@ public class TrayTest {
 		assertTrue(t1.containsBlock(0, 0, 0, 0));
 		assertFalse(t1.containsBlock(1, 1, 1, 1));
 	}
-	
+
 	@Test
 	public void testValidMove() {
 		Tray t1 = new Tray(4, 3);
@@ -79,6 +79,11 @@ public class TrayTest {
 		t1.addBlock(b3);
 		t1.addBlock(b4);
 		t1.addBlock(b5);
+		
+
+		
+		
+		
 		assertFalse(t1.validMove(b1, b2.trow(), b2.lcol()));   // can't move up when already occupied
 		assertFalse(t1.validMove(b1, b3.trow(), b3.lcol()));   // can't move left when already occupied
 		assertFalse(t1.validMove(b1, b4.trow(), b4.lcol()));   // can't move down when already occupied
@@ -113,7 +118,38 @@ public class TrayTest {
 		assertTrue(t3.validMove(b10, 0, 1)); // should be true still since there is enough room for b10.
 		assertFalse(t3.validMove(b9, 0, 1)); // should be False since there is not enough rookm in column 1 for b9 to move over into the specified space.
 		assertFalse(t3.validMove(b12, 2, 2)); // should be false since b12 is not in the blocks arraylist because its null.
+
+	}
+	
+	@Test
+	public void testCopy() {
+		System.out.println("Printing matrices.");
+		Tray t1 = new Tray(4, 3);
+		Block b1 = new Block("1 1 1 1");
+		Block b2 = new Block("0 1 0 1");
+		Block b3 = new Block("1 0 1 0");
+		Block b4 = new Block("2 1 2 1");
+		Block b5 = new Block("1 2 1 2");
+		t1.addBlock(b1);
+		t1.addBlock(b2);
+		t1.addBlock(b3);
+		t1.addBlock(b4);
+		t1.addBlock(b5);
 		
+		Tray t2 = t1.copy();
+		assertEquals(t1.width(),t2.width());
+		assertEquals(t1.height(),t2.height());
+		
+		for(Block block: t1.getBlocks() ) {
+			assertTrue(t2.containsBlock(block.trow(), block.lcol(), block.brow(), block.rcol()));
+			
+		}
+		
+		System.out.println("Printing matrices.");
+		t1.printOccupied();
+		t2.printOccupied();
+		
+	
 	}
 
 }
