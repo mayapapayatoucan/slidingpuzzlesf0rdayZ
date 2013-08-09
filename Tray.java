@@ -3,7 +3,7 @@ import java.util.*;
 
 public class Tray {
 	
-	public boolean debug = true;
+	public boolean debug = false;
 
 	private int trayWidth;
 	private int trayHeight;
@@ -115,11 +115,11 @@ public class Tray {
 		return false;
 	}
 
-	public Tray copy ( ) {
+	public Tray copy () {
 		Tray copyTray = new Tray(height(), width());
 		copyTray.goalBlocks = new ArrayList<Block> (goalBlocks);
 		for (Block block : blocks) {
-			copyTray.addBlock(block);
+			copyTray.addBlock(new Block(block));
 		}
 		return copyTray;
 	}
@@ -218,110 +218,75 @@ public class Tray {
 	public ArrayList<Block> getBlocks() {
 		return blocks;
 	}
-	
-	public boolean equals (Tray t) {
-		if ((height() != t.height()) || (width() != t.width())) {
-			return false;
+
+
+
+	public ArrayList<Tray> posMoves() {
+		ArrayList<Tray> babies = new ArrayList<Tray>();
+
+		for(Block block : blocks) {
+			for(int i =0; i < occupied.length; i++) {
+				int row = i/trayWidth;
+				int col = i%trayWidth;
+
+				if (occupied[i] == null) { 
+					System.out.println("row: " + row + " col: " + col);
+					if (validMove(block, row, col)) {
+
+						Tray t = this.copy();
+						t.moveBlock(t.blocks.get(blocks.indexOf(block)), row, col);	
+						babies.add(t);	
+
+					}
+
+				}
+
 		}
-		boolean inOther;
-		for (Block block : blocks) {
-			inOther = false;
-			for (Block otherBlock : t.getBlocks()) {
-				if (block.equals(otherBlock)) {
-					inOther = true;
+
+	}
+/*
+		//removes duplicates
+		for (Tray t : babies) {
+			for (Tray b : babies) {
+				if(t.equals(b) && (babies.indexOf(t) != babies.indexOf(b)) ) {
+					babies.remove(b);
+
 				}
 			}
-			if (!inOther) {
-				return false;
-			}
-		}
-		for (Block block : t.getBlocks()) {
-			inOther = false;
-			for (Block otherBlock : blocks) {
-				if (block.equals(otherBlock)) {
-					inOther = true;
-				}
-			}
-			if (!inOther) {
-				return false;
-			}
-		}
-		return true;
+		}*/
+		return babies;
 	}
 
-/*
-	public ArrayList<Tray> posMoves() {
-		ArrayList<Tray> babies = new ArrayList<Tray>;
 
-		for(int i; i < occupied.length; i++) {
-			int row = i/width;
-			int col = i%width;
-
-
-			if (occupied[i] == null) {
-
-
-
-				//emptyspace on the LHS border of tray, so don't check element left of it
-				if (i%width == 0) {
-
-					//check right
-					if (occupied[i+1] != null) {
-						if (validMove(occupied[i+1], row, col)){
-							Tray t = this.copy();
-							t.moveBlock(t.occupied[i+1], row, col);
-							
-						}
-
-					}
-
-					//check up
-					if (i-width-1 > 0 ) {
-						if (occupied[i-width-1] != null) {
-							if (validMove(occupied[i-width-1], row, col)){
-								Tray t = this.copy();
-								t.moveBlock(t.occupied[i-width-1], row, col);
-							
-						}
-
-
-					}
-
-
-
-
-					}
-
-
-					}
-
-
-
-
-
-
-				}
-
-				//emptyspace on RHS border of tray, so don't check element to the right
-				if (i%width == width-1) {
-
-				}
-
-
-
-
-
-
-
-
-
-
+	public boolean equals (Tray t) {
+	if ((height() != t.height()) || (width() != t.width())) {
+		return false;
+	}
+	boolean inOther;
+	for (Block block : blocks) {
+		inOther = false;
+		for (Block otherBlock : t.getBlocks()) {
+			if (block.equals(otherBlock)) {
+				inOther = true;
 			}
-
-
 		}
+		if (!inOther) {
+			return false;
+		}
+	}
+	for (Block block : t.getBlocks()) {
+		inOther = false;
+		for (Block otherBlock : blocks) {
+			if (block.equals(otherBlock)) {
+				inOther = true;
+			}
+		}
+		if (!inOther) {
+			return false;
+		}
+	}
+	return true;
+}
 
 
-
-	}*/
 }
