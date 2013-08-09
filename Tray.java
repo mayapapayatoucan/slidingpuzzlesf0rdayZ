@@ -224,38 +224,64 @@ public class Tray {
 	public ArrayList<Tray> posMoves() {
 		ArrayList<Tray> babies = new ArrayList<Tray>();
 
-		for(Block block : blocks) {
-			for(int i =0; i < occupied.length; i++) {
-				int row = i/trayWidth;
-				int col = i%trayWidth;
 
-				if (occupied[i] == null) { 
-					System.out.println("row: " + row + " col: " + col);
-					if (validMove(block, row, col)) {
+		for (int i = 0; i < occupied.length; i++) {
+			int row = i/trayWidth;
+			int col = i%trayWidth;
 
-						Tray t = this.copy();
-						t.moveBlock(t.blocks.get(blocks.indexOf(block)), row, col);	
-						babies.add(t);	
-
-					}
-
-				}
-
-		}
-
-	}
-/*
-		//removes duplicates
-		for (Tray t : babies) {
-			for (Tray b : babies) {
-				if(t.equals(b) && (babies.indexOf(t) != babies.indexOf(b)) ) {
-					babies.remove(b);
+			//CHECK ABOVE
+			if (i - trayWidth - 1 > 0) {
+				if (validMove(occupied[i - trayWidth -1], row, col)){
+					Tray t = this.copy();
+					t.moveBlock(t.blocks.get(blocks.indexOf(occupied[i - trayWidth -1])), row, col);	
+					babies.add(t);	
 
 				}
 			}
-		}*/
-		return babies;
-	}
+
+			//Check below
+			if (i + trayWidth - 1 < occupied.length) {
+				if (validMove(occupied[i + trayWidth - 1], row, col)){
+					Tray t = this.copy();
+					t.moveBlock(t.blocks.get(blocks.indexOf(occupied[i + trayWidth - 1])), row, col);	
+					babies.add(t);	
+
+				}
+			}		
+
+			//Check if left
+			if (i%trayWidth != 0)	{
+				if (validMove(occupied[i - 1], row, col)){
+					Tray t = this.copy();
+					t.moveBlock(t.blocks.get(blocks.indexOf(occupied[i - 1])), row, col);	
+					babies.add(t);	
+
+				}
+
+
+			}
+
+			//Check if right
+			if (i%trayWidth != trayWidth -1)	{
+				if (validMove(occupied[i + 1], row, col)) {
+					Tray t = this.copy();
+					t.moveBlock(t.blocks.get(blocks.indexOf(occupied[i + 1])), row, col);	
+					babies.add(t);	
+
+				}
+
+			}	
+		}
+
+		//maybe remove duplicates ??
+			return babies;
+		}
+
+
+
+
+
+
 
 
 	public boolean equals (Tray t) {
