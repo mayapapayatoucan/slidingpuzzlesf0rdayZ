@@ -1,13 +1,15 @@
 import static org.junit.Assert.*;
 
 import java.awt.*;
+import java.util.*;
 
 import org.junit.Test;
 
 
 public class TrayTest {
+	
 
-	@Test
+/*	@Test 
 	public void testIsOK() {
 		Tray t1 = new Tray(2, 2);
 		Block b = new Block("0 0 0 0");
@@ -36,7 +38,7 @@ public class TrayTest {
 		testAddBlockHelper(t3, b7);
 		testAddBlockHelper(t3, b8);
 		assertTrue(testIsOKHelper(t3));
-	}
+	} */
 
 	public void testAddBlockHelper (Tray t, Block b) {
 		try {
@@ -80,6 +82,10 @@ public class TrayTest {
 		t1.addBlock(b4);
 		t1.addBlock(b5);
 		
+
+		
+		
+		
 		assertFalse(t1.validMove(b1, b2.trow(), b2.lcol()));   // can't move up when already occupied
 		assertFalse(t1.validMove(b1, b3.trow(), b3.lcol()));   // can't move left when already occupied
 		assertFalse(t1.validMove(b1, b4.trow(), b4.lcol()));   // can't move down when already occupied
@@ -88,7 +94,6 @@ public class TrayTest {
 		assertFalse(t1.validMove(b1, 0, 0));   // can't move diagonally (up-left)
 		assertFalse(t1.validMove(b1, 2, 0));   // can't move diagonally (down-left)
 		assertFalse(t1.validMove(b1, 2, 2));   // can't move diagonally (down-right)
-		assertFalse(t1.validMove(b3, 3, 0));   // can't move more than one space
 		Tray t2 = new Tray(4, 3);
 		Block b6 = new Block("0 0 1 0");
 		t2.addBlock(b6);
@@ -120,7 +125,7 @@ public class TrayTest {
 	
 	@Test
 	public void testCopy() {
-		System.out.println("Printing matrices.");
+
 		Tray t1 = new Tray(4, 3);
 		Block b1 = new Block("1 1 1 1");
 		Block b2 = new Block("0 1 0 1");
@@ -147,6 +152,44 @@ public class TrayTest {
 		t2.printOccupied();
 		
 	
+	}
+
+@Test
+	public void testBabies() {
+
+		Tray t1 = new Tray(4, 3);
+		Block b1 = new Block("1 1 1 1");
+		Block b2 = new Block("0 1 0 1");
+		Block b3 = new Block("1 0 1 0");
+		Block b4 = new Block("2 1 2 1");
+		Block b5 = new Block("1 2 1 2");
+		t1.addBlock(b1);
+		t1.addBlock(b2);
+		t1.addBlock(b3);
+		t1.addBlock(b4);
+		t1.addBlock(b5);
+
+		t1.printOccupied();
+		ArrayList<Tray> babies = t1.posMoves();
+		for(Tray b : babies) {
+			b.printOccupied();
+		}
+		
+		Tray t2 = new Tray(5, 4);
+		Block b6 = new Block("0 0 1 0");
+		Block b7 = new Block("2 1 3 2");
+		Block b8 = new Block("4 0 4 1");
+		t2.addBlock(b6);
+		t2.addBlock(b7);
+		t2.addBlock(b8);
+		t2.printOccupied();
+		System.out.println("Can move 0 0 0 1 down: " + t2.validMove(b6, 0, 1));
+		ArrayList<Tray> moreBabies = t2.posMoves();
+		System.out.println("Moves are:");
+		for (Tray von: moreBabies) {
+			von.printOccupied();
+		}
+
 	}
 
 }
