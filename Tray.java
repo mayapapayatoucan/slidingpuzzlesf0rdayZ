@@ -149,6 +149,10 @@ public class Tray {
 		int browDest = trowDest + b.height();
 		int rcolDest = lcolDest + b.width();
 
+		if ((Math.abs(b.trow() - trowDest) > 1) || (Math.abs(b.lcol() - lcolDest) > 1) || (Math.abs(b.brow() - browDest) > 1) || (Math.abs(b.rcol() - rcolDest) > 1)) {
+			return false; // can only move one space at a time
+		}
+
 		for (Block block : blocks) {
 			if (!b.equals(block) && block.overlapping(trowDest, lcolDest, browDest, rcolDest)) {
 				return false;
