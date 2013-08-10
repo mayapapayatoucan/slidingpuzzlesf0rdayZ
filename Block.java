@@ -30,6 +30,16 @@ public class Block {
 			throw new IllegalArgumentException("Coordinates do not form a valid block.");
 		}
 	}
+	
+	public Block (Block b) {
+		trow = b.trow();
+		brow = b.brow();
+		lcol = b.lcol();
+		rcol = b.rcol();
+
+		
+		
+	}
 
 	public void move (int newTopRow, int newLeftCol) {
 		int rowShift = trow - newTopRow;
