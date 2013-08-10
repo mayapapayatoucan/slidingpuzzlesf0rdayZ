@@ -1,318 +1,254 @@
+import static org.junit.Assert.*;
+
 import java.awt.*;
 import java.util.*;
 
-public class Tray {
+import org.junit.Test;
+
+
+public class TrayTest {
 	
-	public boolean debug = false;
 
-	private int trayWidth;
-	private int trayHeight;
+/*	@Test 
+	public void testIsOK() {
+		Tray t1 = new Tray(2, 2);
+		Block b = new Block("0 0 0 0");
+		t1.addBlock(b);
+		assertFalse(testIsOKHelper(t1));
+		testAddBlockHelper(t1, b);
+		Tray t2 = new Tray(2, 2);
+		Block b1 = new Block("0 0 0 0");
+		Block b2 = new Block("0 1 0 1");
+		Block b3 = new Block("1 0 1 0");
+		Block b4 = new Block("1 1 1 1");
+		t2.addBlock(b1);
+		t2.addBlock(b2);
+		t2.addBlock(b3);
+		t2.addBlock(b4);
+		assertFalse(testIsOKHelper(t2));
+		Tray t3 = new Tray(5, 5);
+		Block center = new Block("1 1 2 2");
+		Block b5 = new Block("0 1 1 1");   // top overlap
+		Block b6 = new Block("1 1 1 2");   // right overlap
+		Block b7 = new Block("2 0 2 1");   // left overlap
+		Block b8 = new Block("2 2 3 2");   // bottom overlap
+		t3.addBlock(center);
+		testAddBlockHelper(t3, b5);
+		testAddBlockHelper(t3, b6);
+		testAddBlockHelper(t3, b7);
+		testAddBlockHelper(t3, b8);
+		assertTrue(testIsOKHelper(t3));
+	} */
 
+	public void testAddBlockHelper (Tray t, Block b) {
+		try {
+			t.addBlock(b);
+			fail();
+		} catch (IllegalStateException e) {
 
-	private ArrayList<Block> goalBlocks = new ArrayList<Block>();
-	private ArrayList<Block> blocks = new ArrayList<Block>();
-	private Block[] occupied; //ROW-MAJOR
-	
-	public Tray() {
+		}
 	}
-	
-	public Tray(int numRows, int numCols) {
+
+	public boolean testIsOKHelper (Tray t) {
+		try {
+			t.isOK();
+			return false;
+		} catch (IllegalStateException e) {
+			System.out.println(e.getMessage());
+			return true;
+		}
+	}
+
+	@Test
+	public void testContainsBlock() {
+		Tray t1 = new Tray(4, 3);
+		Block b1 = new Block("0 0 0 0");
+		t1.addBlock(b1);
+		assertTrue(t1.containsBlock(0, 0, 0, 0));
+		assertFalse(t1.containsBlock(1, 1, 1, 1));
+	}
+
+	@Test
+	public void testValidMove() {
+		Tray t1 = new Tray(4, 3);
+		Block b1 = new Block("1 1 1 1");
+		Block b2 = new Block("0 1 0 1");
+		Block b3 = new Block("1 0 1 0");
+		Block b4 = new Block("2 1 2 1");
+		Block b5 = new Block("1 2 1 2");
+		t1.addBlock(b1);
+		t1.addBlock(b2);
+		t1.addBlock(b3);
+		t1.addBlock(b4);
+		t1.addBlock(b5);
 		
-		trayHeight = numRows;
-		trayWidth = numCols;
 
-		occupied = new Block[(trayWidth) * (trayHeight)];
+		
+		
+		
+		assertFalse(t1.validMove(b1, b2.trow(), b2.lcol()));   // can't move up when already occupied
+		assertFalse(t1.validMove(b1, b3.trow(), b3.lcol()));   // can't move left when already occupied
+		assertFalse(t1.validMove(b1, b4.trow(), b4.lcol()));   // can't move down when already occupied
+		assertFalse(t1.validMove(b1, b5.trow(), b5.lcol()));   // can't move right when already occupied
+		assertFalse(t1.validMove(b1, 0, 2));   // can't move diagonally (up-right)
+		assertFalse(t1.validMove(b1, 0, 0));   // can't move diagonally (up-left)
+		assertFalse(t1.validMove(b1, 2, 0));   // can't move diagonally (down-left)
+		assertFalse(t1.validMove(b1, 2, 2));   // can't move diagonally (down-right)
+		Tray t2 = new Tray(4, 3);
+		Block b6 = new Block("0 0 1 0");
+		t2.addBlock(b6);
+		assertTrue(t2.validMove(b6, 0, 1));   // can move into adjacent empty space
+		assertFalse(t2.validMove(b6, -1, 0));  // can't move off the board
+		assertFalse(t2.validMove(b6, 0, -1));  // can't move off the board
+		Block b7 = new Block("3 2 3 2");
+		t2.addBlock(b7);
+		assertFalse(t2.validMove(b7, 5, 3));  // can't move off the board
+		assertFalse(t2.validMove(b7, 4, 4));  // can't move off the board
+		Block b8 = new Block("3 0 3 0");
+		t2.addBlock(b8);
+		assertFalse(t2.validMove(b6, 2, 0));  // not enough room
+		Tray t3 = new Tray(4, 3);
+		Block b9 = new Block("0 0 1 0");
+		Block b10 = new Block("1 1 2 1");
+		Block b11 = new Block("0 2 0 2");
+		Block b12 = null; // null block object for testing purposes.
+		t3.addBlock(b9);
+		t3.addBlock(b10);
+		t3.addBlock(b11);
+		t3.addBlock(b12); // should not add b12 to the ArrayList since b12 is null.
+		assertTrue(t3.validMove(b11, 0, 1)); // should be true since there is just enough space for block b11 to move into it.
+		assertTrue(t3.validMove(b10, 0, 1)); // should be true still since there is enough room for b10.
+		assertFalse(t3.validMove(b9, 0, 1)); // should be False since there is not enough rookm in column 1 for b9 to move over into the specified space.
+		assertFalse(t3.validMove(b12, 2, 2)); // should be false since b12 is not in the blocks arraylist because its null.
+
 	}
+	
+	@Test
+	public void testCopy() {
 
-	public void addBlock (Block b) {
-		if (b != null){
-
-
-			//POPULATE MATRIX OF OCCUPIED SPACES
-			for (int i = b.trow(); i <= b.brow(); i++) {
-				for (int j = b.lcol(); j <= b.rcol(); j++) {
-					//System.out.println("i: " + i);
-					//System.out.println("j: " + j);
-					//System.out.println("index: " + (j + i*trayWidth));
-					//System.out.println("occupied.length: " + occupied.length);
-					if (occupied[j + i*trayWidth] != null) {
-						throw new IllegalStateException("Cannot add block to occupied space.");
-					}
-					occupied[j + i*trayWidth] = b;
-				}
-			}
-
-			blocks.add(b);
+		Tray t1 = new Tray(4, 3);
+		Block b1 = new Block("1 1 1 1");
+		Block b2 = new Block("0 1 0 1");
+		Block b3 = new Block("1 0 1 0");
+		Block b4 = new Block("2 1 2 1");
+		Block b5 = new Block("1 2 1 2");
+		t1.addBlock(b1);
+		t1.addBlock(b2);
+		t1.addBlock(b3);
+		t1.addBlock(b4);
+		t1.addBlock(b5);
+		
+		Tray t2 = t1.copy();
+		assertEquals(t1.width(),t2.width());
+		assertEquals(t1.height(),t2.height());
+		
+		for(Block block: t1.getBlocks() ) {
+			assertTrue(t2.containsBlock(block.trow(), block.lcol(), block.brow(), block.rcol()));
 			
-
-			//FOR DEBUGGING
-			if (debug) {
-				printOccupied();
-			}
-		}
-	}
-
-	public Block[] getOccupied ( ) {
-		return occupied;
-	}
-	
-	public void addGoalBlock (Block b) {
-		if (b != null) {
-			goalBlocks.add(b);
-		}
-	}
-
-	public void printOccupied() {
-
-		for (int i = 0; i < trayHeight; i++) {
-			for (int j = 0; j < trayWidth; j++) {
-				if (occupied[j + i*trayWidth] != null) {
-					System.out.print("1 ");
-				}
-				else {
-					System.out.print("0 ");
-				}
-			}
-			System.out.println("");
-		}
-		System.out.println("");
-
-	}
-	
-	public void moveBlock (Block b, int row, int col) {
-		if (validMove(b, row, col)) {
-
-			for (int i = b.trow(); i <= b.brow(); i++) {
-					for (int j = b.lcol(); j <= b.rcol(); j++) {
-						occupied[j + i*trayWidth] = null;
-						if (debug) {
-						}
-					}
-			}
-
-			for (int i = row; i <= row + b.height(); i++) {
-				for (int j = col; j <= col + b.width(); j++) {
-					occupied[j + i*trayWidth] = b;
-						if (debug) {
-						}
-				}
-			}
-
-			b.move(row, col);
-
-			if (debug) {
-				printOccupied();
-			}
-		}
-	}
-	
-	public boolean containsBlock (int topRow, int leftCol, int bottomRow, int rightCol) {
-		for (Block block: blocks) {
-			if (block.trow() == topRow && block.lcol() == leftCol && block.brow() == bottomRow && block.rcol() == rightCol) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	public Tray copy () {
-		Tray copyTray = new Tray(height(), width());
-		copyTray.goalBlocks = new ArrayList<Block> (goalBlocks);
-		for (Block block : blocks) {
-			copyTray.addBlock(new Block(block));
-		}
-		return copyTray;
-	}
-	
-	public boolean containsGoalBlock (int topRow, int leftCol, int bottomRow, int rightCol) {
-		for (Block block: goalBlocks) {
-			if (block.trow() == topRow && block.lcol() == leftCol && block.brow() == bottomRow && block.rcol() == rightCol) {
-				return true;
-			}
-		}
-		return false;
-	}
-	
-	public boolean validMove (Block b, int trowDest, int lcolDest) {
-
-		if (!blocks.contains(b)){
-			return false;   // can only move blocks on the board
-		}
-		if ((trowDest < 0) || (trowDest > trayHeight) || (lcolDest < 0) || (lcolDest > trayWidth)) {
-			return false;   // cannot move off the board
 		}
 		
-		if ((b.trow() != trowDest) && (b.lcol() != lcolDest)) {
-			return false; //cannot move diagonally
+		System.out.println("Printing matrices.");
+		t1.printOccupied();
+		t2.printOccupied();
+		
+	
+	}
+
+@Test
+	public void testBabies() {
+
+		Tray t1 = new Tray(4, 3);
+		Block b1 = new Block("1 1 1 1");
+		Block b2 = new Block("0 1 0 1");
+		Block b3 = new Block("1 0 1 0");
+		Block b4 = new Block("2 1 2 1");
+		Block b5 = new Block("1 2 1 2");
+		t1.addBlock(b1);
+		t1.addBlock(b2);
+		t1.addBlock(b3);
+		t1.addBlock(b4);
+		t1.addBlock(b5);
+
+		t1.printOccupied();
+		ArrayList<Tray> babies = t1.posMoves();
+		for(Tray b : babies) {
+			b.printOccupied();
 		}
 		
-		int browDest = trowDest + b.height();
-		int rcolDest = lcolDest + b.width();
-
-		if ((Math.abs(b.trow() - trowDest) > 1) || (Math.abs(b.lcol() - lcolDest) > 1) || (Math.abs(b.brow() - browDest) > 1) || (Math.abs(b.rcol() - rcolDest) > 1)) {
-			return false; // can only move one space at a time
+		Tray t2 = new Tray(5, 4);
+		Block b6 = new Block("0 0 1 0");
+		Block b7 = new Block("2 1 3 2");
+		Block b8 = new Block("4 0 4 1");
+		t2.addBlock(b6);
+		t2.addBlock(b7);
+		t2.addBlock(b8);
+		t2.printOccupied();
+		ArrayList<Tray> moreBabies = t2.posMoves();
+		System.out.println("Moves are:");
+		for (Tray von: moreBabies) {
+			von.printOccupied();
 		}
 
-		for (Block block : blocks) {
-			if (!b.equals(block) && block.overlapping(trowDest, lcolDest, browDest, rcolDest)) {
-				return false;
-			}
-		}
-		return true;
 	}
+
+@Test 
+	public void testGoalConfig() {
 	
-	public int width() {
-		return trayWidth;
-	}
+	Tray t1 = new Tray(4, 3);
+	Block b1 = new Block("1 1 1 1");
+	Block b2 = new Block("0 1 0 1");
+	Block b3 = new Block("1 0 1 0");
+	Block b4 = new Block("2 1 2 1");
+	Block b5 = new Block("1 2 1 2");
+	t1.addBlock(b1);
+	t1.addBlock(b2);
+	t1.addBlock(b3);
+	t1.addBlock(b4);
+	t1.addBlock(b5);
 	
-	public int height() {
-		return trayHeight;
-	}
+	Block g1 = new Block("1 1 1 1");
+	Block g2 = new Block("2 1 2 1");
 	
-	public void isOK() {
-		if (debug) {
-			//Integer[][] visited = new Integer[blocks.size()][4];
-			//int index = 0;
-			boolean moveExists = false;
-			if (blocks.size() < goalBlocks.size()) {
-				throw new IllegalStateException("More goal blocks than blocks on the board");
-			}
-			for (Block block : blocks) {
-				if (block.trow() < 0 || block.brow() > trayHeight || block.lcol() < 0 || block.rcol() > trayWidth) {
-					throw new IllegalStateException("Block not in board");
-				}
-				if (!Arrays.asList(occupied).contains(block)) {
-					throw new IllegalStateException("Block incorrectly added");
-				}
-				//Integer[] coordinates = {Integer.valueOf(block.trow()), Integer.valueOf(block.lcol()), Integer.valueOf(block.brow()), Integer.valueOf(block.rcol())};
-				//visited[index] = coordinates;
-				for (Block otherBlock : blocks) {
-					//System.out.println("block: " + block);
-					//System.out.println("otherBlock: " + otherBlock);
-					if (!(otherBlock == block) && block.overlapping(otherBlock.trow(), otherBlock.lcol(), otherBlock.brow(), otherBlock.rcol())) {
-						throw new IllegalStateException("Two blocks are in the same location");
-					}
-				}
-				for (int i = block.trow() - 1; i < block.brow() + 1; i++) {
-					for (int j = block.lcol() - 1; j < block.rcol() + 1; j++) {
-						if (validMove(block, i, j)) {
-							moveExists = true;
-						}
-					}
-				}
-			}
-			for (Block block : occupied) {
-				//System.out.println(blocks);
-				if (block != null) {
-					if (!blocks.contains(block)) {
-						throw new IllegalStateException("Block incorrectly added");
-					}
-				}
-			}
-			if (!moveExists) {
-				throw new IllegalStateException("No valid moves");
-			}
-		}
-	}
+	t1.addGoalBlock(g1);
+	t1.addGoalBlock(g2);
 	
-	public ArrayList<Block> getBlocks() {
-		return blocks;
-	}
-
-
-
-	public ArrayList<Tray> posMoves() {
-		ArrayList<Tray> babies = new ArrayList<Tray>();
-
-
-		for (int i = 0; i < occupied.length; i++) {
-			int row = i/trayWidth;
-			int col = i%trayWidth;
-
-			//CHECK ABOVE
-			if (i - trayWidth - 1 > 0) {
-				if (validMove(occupied[i - trayWidth -1], row, col)){
-					Tray t = this.copy();
-					t.moveBlock(t.blocks.get(blocks.indexOf(occupied[i - trayWidth -1])), row, col);	
-					babies.add(t);	
-
-				}
-			}
-
-			//Check below
-			if (i + trayWidth - 1 < occupied.length) {
-				if (validMove(occupied[i + trayWidth - 1], row, col)){
-					Tray t = this.copy();
-					t.moveBlock(t.blocks.get(blocks.indexOf(occupied[i + trayWidth - 1])), row, col);	
-					babies.add(t);	
-
-				}
-			}		
-
-			//Check if left
-			if (i%trayWidth != 0)	{
-				if (validMove(occupied[i - 1], row, col)){
-					Tray t = this.copy();
-					t.moveBlock(t.blocks.get(blocks.indexOf(occupied[i - 1])), row, col);	
-					babies.add(t);	
-
-				}
-
-
-			}
-
-			//Check if right
-			if (i%trayWidth != trayWidth -1)	{
-				if (validMove(occupied[i + 1], row, col)) {
-					Tray t = this.copy();
-					t.moveBlock(t.blocks.get(blocks.indexOf(occupied[i + 1])), row, col);	
-					babies.add(t);	
-
-				}
-
-			}	
-		}
-
-		//maybe remove duplicates ??
-			return babies;
-		}
-
-
-
-
-
-
-
-
-	public boolean equals (Tray t) {
-	if ((height() != t.height()) || (width() != t.width())) {
-		return false;
-	}
-	boolean inOther;
-	for (Block block : blocks) {
-		inOther = false;
-		for (Block otherBlock : t.getBlocks()) {
-			if (block.equals(otherBlock)) {
-				inOther = true;
-			}
-		}
-		if (!inOther) {
-			return false;
-		}
-	}
-	for (Block block : t.getBlocks()) {
-		inOther = false;
-		for (Block otherBlock : blocks) {
-			if (block.equals(otherBlock)) {
-				inOther = true;
-			}
-		}
-		if (!inOther) {
-			return false;
-		}
-	}
-	return true;
+	assertTrue(t1.correctConfig());
+	
+	Tray t2 = new Tray(5, 4);
+	Block b6 = new Block("0 0 1 0");
+	Block b7 = new Block("2 1 3 2");
+	Block b8 = new Block("4 0 4 1");
+	t2.addBlock(b6);
+	t2.addBlock(b7);
+	t2.addBlock(b8);
+	
+	Block g3 = new Block("1 1 1 1");
+	t2.addGoalBlock(g3);
+	
+	assertFalse(t2.correctConfig());
+	
+	Tray t3 = new Tray(5, 4);
+	Block b9 = new Block("0 0 1 0");
+	Block b10 = new Block("2 1 3 2");
+	Block b11 = new Block("4 0 4 1");
+	t3.addBlock(b9);
+	t3.addBlock(b10);
+	t3.addBlock(b11);
+	
+	Block g5 = new Block("1 1 1 1");
+	Block g6 = new Block("0 0 1 0");
+	Block g7 = new Block("4 0 4 1");
+	
+	t3.addGoalBlock(g5);
+	t3.addGoalBlock(g6);
+	t3.addGoalBlock(g7);
+	
+	assertFalse(t3.correctConfig());
+	
+	
+	
+	
+	
 }
-
 
 }
