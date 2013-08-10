@@ -13,6 +13,22 @@ public class Tray {
 	private ArrayList<Block> blocks = new ArrayList<Block>();
 	private Block[] occupied; //ROW-MAJOR
 	
+	public class Move {
+
+		int row;
+		int col;
+		int rowDest;
+		int colDest;
+
+		public Move(int row, int col, int rowDest, int colDest) {
+			this.row = row;
+			this.col = col;
+			this.rowDest = rowDest;
+			this.colDest = colDest;
+		}
+
+	}
+
 	public Tray() {
 	}
 	
@@ -123,6 +139,16 @@ public class Tray {
 		}
 		return copyTray;
 	}
+
+	public boolean correctConfig ( ) {
+		for (Block block: goalBlocks) {
+			if (!this.containsBlock(block.trow(), block.lcol(), block.brow(), block.rcol())) {
+				return false;
+
+			}
+		}
+		return true;
+	}
 	
 	public boolean containsGoalBlock (int topRow, int leftCol, int bottomRow, int rightCol) {
 		for (Block block: goalBlocks) {
@@ -130,7 +156,7 @@ public class Tray {
 				return true;
 			}
 		}
-		return false;
+		return false; 
 	}
 	
 	public boolean validMove (Block b, int trowDest, int lcolDest) {
@@ -226,51 +252,71 @@ public class Tray {
 
 
 		for (int i = 0; i < occupied.length; i++) {
-			int row = i/trayWidth;
-			int col = i%trayWidth;
+			if (occupied[i] == null) {
 
-			//CHECK ABOVE
-			if (i - trayWidth - 1 > 0) {
-				if (validMove(occupied[i - trayWidth -1], row, col)){
-					Tray t = this.copy();
-					t.moveBlock(t.blocks.get(blocks.indexOf(occupied[i - trayWidth -1])), row, col);	
-					babies.add(t);	
+				System.out.println("OCCUPIED AT INDEX " + i + " IS NULL");
+
+				int row = i/trayWidth;
+				int col = i%trayWidth;
+
+				//CHECK ABOVE
+				if (i - trayWidth >= 0) {
+					Block b = occupied[i - trayWidth];
+					if (b != null && validMove(b, row - b.height(), col)){
+						Tray t = this.copy();
+
+						//System.out.println("BEFORE MOVING COPY TRAY: ");
+						t.printOccupied();
+						t.moveBlock(t.blocks.get(blocks.indexOf(occupied[i - trayWidth])),
+									row - b.height(), col);
+						//System.out.println("THE MORNING AFTER");
+						t.printOccupied();	
+						babies.add(t);	
+
+						//System.out.println("Blocks index of " + blocks.indexOf(occupied[i - trayWidth]));
+
+						System.out.println("MOVE DOWN TO ROW " + row + " COL " + col);
+
+					}
+				}
+
+				//Check below
+				if (i + trayWidth < occupied.length) {
+					if (validMove(occupied[i + trayWidth], row, col)){
+						Tray t = this.copy();
+						t.moveBlock(t.blocks.get(blocks.indexOf(occupied[i + trayWidth])), row, col);	
+						babies.add(t);	
+
+					System.out.println("MOVE UP TO ROW " + row + " COL " + col);
+					}
+				}		
+
+				//Check if left
+				if (i%trayWidth != 0)	{
+					Block b = occupied[i-1];
+					if (b != null && validMove(occupied[i - 1], row, col - b.width())){
+						Tray t = this.copy();
+						t.moveBlock(t.blocks.get(blocks.indexOf(occupied[i - 1])), row, col - b.width());	
+						babies.add(t);	
+
+						System.out.println("MOVE RIGHT TO ROW" + row + " COL " + col);
+					}
+
 
 				}
+
+				//Check if right
+				if (i%trayWidth != trayWidth -1)	{
+					if (validMove(occupied[i + 1], row, col)) {
+						Tray t = this.copy();
+						t.moveBlock(t.blocks.get(blocks.indexOf(occupied[i + 1])), row, col);	
+						babies.add(t);	
+
+						System.out.println("MOVE LEFT TO ROW" + row + " COL " + col);
+					}
+
+				}	
 			}
-
-			//Check below
-			if (i + trayWidth - 1 < occupied.length) {
-				if (validMove(occupied[i + trayWidth - 1], row, col)){
-					Tray t = this.copy();
-					t.moveBlock(t.blocks.get(blocks.indexOf(occupied[i + trayWidth - 1])), row, col);	
-					babies.add(t);	
-
-				}
-			}		
-
-			//Check if left
-			if (i%trayWidth != 0)	{
-				if (validMove(occupied[i - 1], row, col)){
-					Tray t = this.copy();
-					t.moveBlock(t.blocks.get(blocks.indexOf(occupied[i - 1])), row, col);	
-					babies.add(t);	
-
-				}
-
-
-			}
-
-			//Check if right
-			if (i%trayWidth != trayWidth -1)	{
-				if (validMove(occupied[i + 1], row, col)) {
-					Tray t = this.copy();
-					t.moveBlock(t.blocks.get(blocks.indexOf(occupied[i + 1])), row, col);	
-					babies.add(t);	
-
-				}
-
-			}	
 		}
 
 		//maybe remove duplicates ??
