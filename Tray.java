@@ -2,7 +2,7 @@ import java.awt.*;
 import java.util.*;
 
 public class Tray {
-	
+
 	public boolean debug = false;
 
 	private int trayWidth;
@@ -14,7 +14,7 @@ public class Tray {
 	private ArrayList<Block> goalBlocks = new ArrayList<Block>();
 	private ArrayList<Block> blocks = new ArrayList<Block>();
 	private Block[] occupied; //ROW-MAJOR
-	
+
 	public class Move {
 
 		int row;
@@ -28,12 +28,12 @@ public class Tray {
 			this.rowDest = rowDest;
 			this.colDest = colDest;
 		}
-		
+
 		public String toString ( ) {
-			Integer rowInt = Int(row);
-			Integer colInt = Int(col);
-			Integer rowDestInt = Int(rowDest);
-			Integer colDestInt = Int(colDest);
+			Integer rowInt = new Integer(row);
+			Integer colInt = new Integer(col);
+			Integer rowDestInt = new Integer(rowDest);
+			Integer colDestInt = new Integer(colDest);
 			String moveString;
 			moveString = rowInt.toString() + colInt.toString() + rowDestInt.toString() + colDestInt.toString();
 			return moveString;
@@ -43,20 +43,28 @@ public class Tray {
 
 	public Tray() {
 	}
-	
+
 	public Tray(int numRows, int numCols) {
-		
+
 		trayHeight = numRows;
 		trayWidth = numCols;
 
 		occupied = new Block[(trayWidth) * (trayHeight)];
 	}
-	
-	public Tray(int numRows, int numCols, Move m, Tray last) { //use as constructor for children trays.
-		trayHeight = numRows;
-		trayWidth = numCols;
+
+	// public Tray(int numRows, int numCols, Move m, Tray last) { //use as constructor for children trays.
+	// 	trayHeight = numRows;
+	// 	trayWidth = numCols;
+	// 	prevMove = m;
+	// 	prevTray = last;
+	// 	last.goalBlocks = goalBlocks;
+	// 	for (Block block : last.blocks) {
+	// 		addBlock(new Block(block));
+	// 	}
+	//}
+
+	private void setPrevMove (Move m) {
 		prevMove = m;
-		prevTray = last;
 	}
 
 	public void addBlock (Block b) {
@@ -78,7 +86,7 @@ public class Tray {
 			}
 
 			blocks.add(b);
-			
+
 
 			//FOR DEBUGGING
 			if (debug) {
@@ -90,7 +98,7 @@ public class Tray {
 	public Block[] getOccupied ( ) {
 		return occupied;
 	}
-	
+
 	public void addGoalBlock (Block b) {
 		if (b != null) {
 			goalBlocks.add(b);
@@ -113,7 +121,7 @@ public class Tray {
 		System.out.println("");
 
 	}
-	
+
 	public void moveBlock (Block b, int row, int col) {
 		if (validMove(b, row, col)) {
 
@@ -140,7 +148,7 @@ public class Tray {
 			}
 		}
 	}
-	
+
 	public boolean containsBlock (int topRow, int leftCol, int bottomRow, int rightCol) {
 		for (Block block: blocks) {
 			if (block.trow() == topRow && block.lcol() == leftCol && block.brow() == bottomRow && block.rcol() == rightCol) {
@@ -152,6 +160,7 @@ public class Tray {
 
 	public Tray copy () {
 		Tray copyTray = new Tray(height(), width());
+		copyTray.prevTray = this; // sets the previous tray
 		copyTray.goalBlocks = new ArrayList<Block> (goalBlocks);
 		for (Block block : blocks) {
 			copyTray.addBlock(new Block(block));
@@ -168,7 +177,7 @@ public class Tray {
 		}
 		return true;
 	}
-	
+
 	public boolean containsGoalBlock (int topRow, int leftCol, int bottomRow, int rightCol) {
 		for (Block block: goalBlocks) {
 			if (block.trow() == topRow && block.lcol() == leftCol && block.brow() == bottomRow && block.rcol() == rightCol) {
@@ -177,7 +186,7 @@ public class Tray {
 		}
 		return false; 
 	}
-	
+
 	public boolean validMove (Block b, int trowDest, int lcolDest) {
 
 		if (!blocks.contains(b)){
@@ -186,11 +195,11 @@ public class Tray {
 		if ((trowDest < 0) || (trowDest > trayHeight) || (lcolDest < 0) || (lcolDest > trayWidth)) {
 			return false;   // cannot move off the board
 		}
-		
+
 		if ((b.trow() != trowDest) && (b.lcol() != lcolDest)) {
 			return false; //cannot move diagonally
 		}
-		
+
 		int browDest = trowDest + b.height();
 		int rcolDest = lcolDest + b.width();
 
@@ -205,15 +214,15 @@ public class Tray {
 		}
 		return true;
 	}
-	
+
 	public int width() {
 		return trayWidth;
 	}
-	
+
 	public int height() {
 		return trayHeight;
 	}
-	
+
 	public void isOK() {
 		if (debug) {
 			//Integer[][] visited = new Integer[blocks.size()][4];
@@ -259,7 +268,7 @@ public class Tray {
 			}
 		}
 	}
-	
+
 	public ArrayList<Block> getBlocks() {
 		return blocks;
 	}
@@ -283,13 +292,15 @@ public class Tray {
 					Block b = occupied[i - trayWidth];
 					if (b != null && validMove(b, row - b.height(), col)){
 						Tray t = this.copy();
+						Move pMove = new Move(b.trow(), b.lcol(), row - b.height(), col);
+						t.setPrevMove(pMove);
 
 						//System.out.println("BEFORE MOVING COPY TRAY: ");
-						t.printOccupied();
+						//t.printOccupied();
 						t.moveBlock(t.blocks.get(blocks.indexOf(occupied[i - trayWidth])),
 									row - b.height(), col);
 						//System.out.println("THE MORNING AFTER");
-						t.printOccupied();	
+						//t.printOccupied();	
 						babies.add(t);	
 
 						//System.out.println("Blocks index of " + blocks.indexOf(occupied[i - trayWidth]));
@@ -303,6 +314,8 @@ public class Tray {
 				if (i + trayWidth < occupied.length) {
 					if (validMove(occupied[i + trayWidth], row, col)){
 						Tray t = this.copy();
+						Move pMove = new Move(occupied[i + trayWidth].trow(), occupied[i + trayWidth].lcol(), row, col);
+						t.setPrevMove(pMove);
 						t.moveBlock(t.blocks.get(blocks.indexOf(occupied[i + trayWidth])), row, col);	
 						babies.add(t);	
 
@@ -313,8 +326,10 @@ public class Tray {
 				//Check if left
 				if (i%trayWidth != 0)	{
 					Block b = occupied[i-1];
-					if (b != null && validMove(occupied[i - 1], row, col - b.width())){
+					if (b != null && validMove(b, row, col - b.width())){
 						Tray t = this.copy();
+						Move pMove = new Move(b.trow(), b.lcol(), row, col - b.width());
+						t.setPrevMove(pMove);
 						t.moveBlock(t.blocks.get(blocks.indexOf(occupied[i - 1])), row, col - b.width());	
 						babies.add(t);	
 
@@ -328,6 +343,8 @@ public class Tray {
 				if (i%trayWidth != trayWidth -1)	{
 					if (validMove(occupied[i + 1], row, col)) {
 						Tray t = this.copy();
+						Move pMove = new Move(occupied[i + 1].trow(), occupied[i + 1].lcol(), row, col);
+						t.setPrevMove(pMove);
 						t.moveBlock(t.blocks.get(blocks.indexOf(occupied[i + 1])), row, col);	
 						babies.add(t);	
 
@@ -340,21 +357,22 @@ public class Tray {
 
 		//maybe remove duplicates ??
 			return babies;
-		}
-	
+	}
+
 	// used to give answer for solved puzzle
 	public void printMoves ( ) {
 		Stack<Move> moveStack = new Stack<Move>();
-		while (!prevTray == null){
+		while (prevTray != null){
 			moveStack.push(prevMove);
 			prevTray = prevTray.getPrevTray();
 		}
 		while (!moveStack.empty()) {
+			Move m;
 			m = moveStack.pop();
 			System.out.println(m.toString());
 		}
 	}
-	
+
 	public Move getPrevMove ( ) {
 		return prevMove;
 	}
