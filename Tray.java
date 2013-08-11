@@ -28,6 +28,16 @@ public class Tray {
 			this.rowDest = rowDest;
 			this.colDest = colDest;
 		}
+		
+		public String toString ( ) {
+			Integer rowInt = Int(row);
+			Integer colInt = Int(col);
+			Integer rowDestInt = Int(rowDest);
+			Integer colDestInt = Int(colDest);
+			String moveString;
+			moveString = rowInt.toString() + colInt.toString() + rowDestInt.toString() + colDestInt.toString();
+			return moveString;
+		}
 
 	}
 
