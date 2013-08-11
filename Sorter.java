@@ -100,8 +100,34 @@ public class Sorter {
 		return tray;
 	}
 	
-	public void solve () {
-		
+	//The solve method assumes the tray argument passed in is NOT in the goal config.
+	public void solve (Tray t) {
+		HashSet<Tray> visited = new HashSet<Tray>();
+		visited.add(t);
+		/* 
+		The end of the LinkedList is the front of the Queue and beginning of Ll is back of queue
+		built-in linkedlist method removeLast() dequeus tray at front of queue and 
+		the built-in ll method addFirst(Tray) enqueues to the end of the trayQueue.
+		*/
+		LinkedList<Tray> trayQueue = new LinkedList<Tray>();
+		trayQueue.add(t);
+		while (!trayQueue.isEmpty()) {
+			Tray dQ;
+			dQ = trayQueue.removeLast(); //dequeue
+			//iterate through all the possible moves for dQ
+			ArrayList<Tray> moves = dQ.posMoves();
+			for  (int k = 0; k < dQ.posMoves().size(); k++) {
+				if (moves.get(k).correctConfig()) {
+					moves.get(k).movesToString(); // not a method yet. want to print out all moves to this point
+					break;
+				}
+				if (!visited.contains(moves.get(k))) {
+					visited.add(moves.get(k)); // add the tray to the visited hashset.
+					trayQueue.addFirst(moves.get(k)); // enqueue
+				}
+			}
+		}
+		System.exit(1); //this happens if there is no solution (as specified in piazza post 683).
 	}
 	
 	public static void main(String[] args) {
