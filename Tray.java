@@ -322,13 +322,11 @@ public class Tray {
 		//maybe remove duplicates ??
 			return babies;
 		}
-
-
-
-
-
-
-
+	
+	// used to give answer for solved puzzle
+	public String movesToString ( ) {
+		return "";
+	}
 
 	public boolean equals (Tray t) {
 	if ((height() != t.height()) || (width() != t.width())) {
