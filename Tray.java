@@ -7,6 +7,8 @@ public class Tray {
 
 	private int trayWidth;
 	private int trayHeight;
+	private Move prevMove; // pointer to the single move that got you to the new config.
+	private Tray prevTray; // pointer to the previous tray.
 
 
 	private ArrayList<Block> goalBlocks = new ArrayList<Block>();
@@ -38,6 +40,13 @@ public class Tray {
 		trayWidth = numCols;
 
 		occupied = new Block[(trayWidth) * (trayHeight)];
+	}
+	
+	public Tray(int numRows, int numCols, Move m, Tray last) { //use as constructor for children trays.
+		trayHeight = numRows;
+		trayWidth = numCols;
+		prevMove = m;
+		prevTray = last;
 	}
 
 	public void addBlock (Block b) {
@@ -324,8 +333,24 @@ public class Tray {
 		}
 	
 	// used to give answer for solved puzzle
-	public String movesToString ( ) {
-		return "";
+	public void printMoves ( ) {
+		Stack<Move> moveStack = new Stack<Move>();
+		while (!prevTray == null){
+			moveStack.push(prevMove);
+			prevTray = prevTray.getPrevTray();
+		}
+		while (!moveStack.empty()) {
+			m = moveStack.pop();
+			System.out.println(m.toString());
+		}
+	}
+	
+	public Move getPrevMove ( ) {
+		return prevMove;
+	}
+
+	public Tray getPrevTray ( ) {
+		return prevTray;
 	}
 
 	public boolean equals (Tray t) {
