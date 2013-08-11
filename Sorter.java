@@ -118,7 +118,7 @@ public class Sorter {
 			ArrayList<Tray> moves = dQ.posMoves();
 			for  (int k = 0; k < dQ.posMoves().size(); k++) {
 				if (moves.get(k).correctConfig()) {
-					moves.get(k).movesToString(); // not a method yet. want to print out all moves to this point
+					moves.get(k).printMoves(); // not a method yet. want to print out all moves to this point
 					break;
 				}
 				if (!visited.contains(moves.get(k))) {
