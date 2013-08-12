@@ -1,15 +1,15 @@
 import java.util.*;
 
 public class Sorter {
-	
+
 	private InputSource input;
 	private Tray tray;
 	public boolean debug;
-		
+
 	public Sorter () {
 		// not implemented yet
 	}
-	
+
 	public Sorter (String fileName) {
 		// Based on stuff from InputSource class -- is there an easier way to do this?
 		input = new InputSource(fileName);
@@ -23,7 +23,7 @@ public class Sorter {
 			Parse(s);
 		}
 	}
-	
+
 	public Sorter (String fileName, String goalName) {
 		// Based on stuff from InputSource class -- is there an easier way to do this?
 		input = new InputSource(fileName);
@@ -47,11 +47,11 @@ public class Sorter {
 			}
 		}
 	}
-	
+
 	public void makeTray (String s) {
 		tray = new Tray(Integer.valueOf(s.substring(0, 1)), Integer.valueOf(s.substring(2, 3)));
 	}
-	
+
 	public void Parse (String line) {
 		if (isBlock(line)) {
 			tray.addBlock(new Block(line));
@@ -77,10 +77,10 @@ public class Sorter {
 			System.out.println("Not a valid debugging option. Type -ooptions to see all debugging options.");
 			System.exit(1);
 		} else {
-			
+
 		}
 	}
-	
+
 	public boolean isBlock (String line) {
 		String[] vals = line.split(" ");
 		if (vals.length != 4) {
@@ -95,11 +95,11 @@ public class Sorter {
 		}
 		return true;
 	}
-	
+
 	public Tray getTray() {
 		return tray;
 	}
-	
+
 	//The solve method assumes the tray argument passed in is NOT in the goal config.
 	public void solve (Tray t) {
 		HashSet<Tray> visited = new HashSet<Tray>();
@@ -127,10 +127,11 @@ public class Sorter {
 				}
 			}
 		}
+		System.out.println("NO SOLUTION!");
 		System.exit(1); //this happens if there is no solution (as specified in piazza post 683).
 	}
-	
+
 	public static void main(String[] args) {
-		
+
 	}
 }
