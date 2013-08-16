@@ -10,7 +10,7 @@ public class Block {
 	public Block(String s){
 		String[] points = s.split(" ");
 		if (points.length != 4) {
-			throw new IllegalArgumentException("Must input exactly four integers");
+			throw new IllegalArgumentException("Must input exactly four nonnegative integers");
 		}
 		try {
 
@@ -18,16 +18,20 @@ public class Block {
 			lcol = Integer.parseInt(points[1]);
 			brow = Integer.parseInt(points[2]);
 			rcol = Integer.parseInt(points[3]);
-
+			
 		}
 
 		catch (NumberFormatException e) {
-			throw new IllegalArgumentException("Arguments must be integers.");
+			throw new IllegalArgumentException("Arguments must be nonnegative integers.");
 
 		}
 
 		if ((trow > brow) || (lcol > rcol)) {
 			throw new IllegalArgumentException("Coordinates do not form a valid block.");
+		}
+		
+		if ((trow < 0) || (lcol < 0) || (brow < 0) || (rcol < 0)) {
+			throw new IllegalArgumentException("Arguments cannot be negative.");
 		}
 	}
 	
