@@ -7,8 +7,8 @@ public class Tray {
 
 	private int trayWidth;
 	private int trayHeight;
-	public Move prevMove; // pointer to the single move that got you to the new config.
-	public Tray prevTray; // pointer to the previous tray.
+	private Move prevMove; // pointer to the single move that got you to the new config.
+	private Tray prevTray; // pointer to the previous tray.
 
 
 	private ArrayList<Block> goalBlocks = new ArrayList<Block>();
@@ -17,10 +17,10 @@ public class Tray {
 
 	public class Move {
 
-		int row;
-		int col;
-		int rowDest;
-		int colDest;
+		private int row;
+		private int col;
+		private int rowDest;
+		private int colDest;
 
 		public Move(int row, int col, int rowDest, int colDest) {
 			this.row = row;
@@ -38,6 +38,22 @@ public class Tray {
 			moveString = rowInt.toString() + " " + colInt.toString() + " " + rowDestInt.toString() + " " + colDestInt.toString();
 			return moveString;
 		}
+		
+		public int row() {
+			return row;
+		}
+		
+		public int col() {
+			return col;
+		}
+		
+		public int rowDest() {
+			return rowDest;
+		}
+		
+		public int colDest() {
+			return colDest;
+		}
 
 	}
 
@@ -51,7 +67,7 @@ public class Tray {
 
 		occupied = new Block[(trayWidth) * (trayHeight)];
 	}
-
+	
 	// public Tray(int numRows, int numCols, Move m, Tray last) { //use as constructor for children trays.
 	// 	trayHeight = numRows;
 	// 	trayWidth = numCols;
@@ -77,6 +93,9 @@ public class Tray {
 	public void addBlock (Block b) {
 		if (b != null){
 
+			if ((b.brow() >= trayHeight) || (b.rcol() >= trayWidth)) {
+				throw new IllegalStateException("Block cannot be added outside tray dimensions.");
+			}
 
 			//POPULATE MATRIX OF OCCUPIED SPACES
 			for (int i = b.trow(); i <= b.brow(); i++) {
@@ -100,10 +119,6 @@ public class Tray {
 				printOccupied();
 			}
 		}
-	}
-
-	public Block[] getOccupied ( ) {
-		return occupied;
 	}
 
 	public void addGoalBlock (Block b) {
@@ -222,14 +237,6 @@ public class Tray {
 		return true;
 	}
 
-	public int width() {
-		return trayWidth;
-	}
-
-	public int height() {
-		return trayHeight;
-	}
-
 	public void isOK() {
 		if (debug) {
 			//Integer[][] visited = new Integer[blocks.size()][4];
@@ -275,12 +282,6 @@ public class Tray {
 			}
 		}
 	}
-
-	public ArrayList<Block> getBlocks() {
-		return blocks;
-	}
-
-
 
 	public ArrayList<Tray> posMoves() {
 		ArrayList<Tray> babies = new ArrayList<Tray>();
@@ -407,6 +408,56 @@ public class Tray {
 			System.out.println(m);
 		}
 	}
+	
+	public boolean equals (Tray t) {
+		if ((height() != t.height()) || (width() != t.width())) {
+			return false;
+		}
+		boolean inOther;
+		for (Block block : blocks) {
+			inOther = false;
+			for (Block otherBlock : t.getBlocks()) {
+				if (block.equals(otherBlock)) {
+					inOther = true;
+				}
+			}
+			if (!inOther) {
+				return false;
+			}
+		}
+		for (Block block : t.getBlocks()) {
+			inOther = false;
+			for (Block otherBlock : blocks) {
+				if (block.equals(otherBlock)) {
+					inOther = true;
+				}
+			}
+			if (!inOther) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	public int width() {
+		return trayWidth;
+	}
+
+	public int height() {
+		return trayHeight;
+	}
+	
+	public Block[] getOccupied ( ) {
+		return occupied;
+	}
+
+	public ArrayList<Block> getBlocks() {
+		return blocks;
+	}
+	
+	public ArrayList<Block> getGoalBlocks() {
+		return goalBlocks;
+	}
 
 	public Move getPrevMove ( ) {
 		return prevMove;
@@ -415,36 +466,4 @@ public class Tray {
 	public Tray getPrevTray ( ) {
 		return prevTray;
 	}
-
-	public boolean equals (Tray t) {
-	if ((height() != t.height()) || (width() != t.width())) {
-		return false;
-	}
-	boolean inOther;
-	for (Block block : blocks) {
-		inOther = false;
-		for (Block otherBlock : t.getBlocks()) {
-			if (block.equals(otherBlock)) {
-				inOther = true;
-			}
-		}
-		if (!inOther) {
-			return false;
-		}
-	}
-	for (Block block : t.getBlocks()) {
-		inOther = false;
-		for (Block otherBlock : blocks) {
-			if (block.equals(otherBlock)) {
-				inOther = true;
-			}
-		}
-		if (!inOther) {
-			return false;
-		}
-	}
-	return true;
-}
-
-
 }
