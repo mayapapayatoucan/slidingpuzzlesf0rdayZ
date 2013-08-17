@@ -13,7 +13,6 @@ public class Tray {
 
 	private ArrayList<Block> goalBlocks = new ArrayList<Block>();
 	private ArrayList<Block> blocks = new ArrayList<Block>();
-	private Block[] occupied; //ROW-MAJOR
 
 	public class Move {
 
@@ -65,7 +64,7 @@ public class Tray {
 		trayHeight = numRows;
 		trayWidth = numCols;
 
-		occupied = new Block[(trayWidth) * (trayHeight)];
+
 	}
 	
 	// public Tray(int numRows, int numCols, Move m, Tray last) { //use as constructor for children trays.
@@ -97,6 +96,7 @@ public class Tray {
 				throw new IllegalStateException("Block cannot be added outside tray dimensions.");
 			}
 
+/*
 			//POPULATE MATRIX OF OCCUPIED SPACES
 			for (int i = b.trow(); i <= b.brow(); i++) {
 				for (int j = b.lcol(); j <= b.rcol(); j++) {
@@ -111,13 +111,15 @@ public class Tray {
 				}
 			}
 
+*/
 			blocks.add(b);
 
 
-			//FOR DEBUGGING
+/*		//FOR DEBUGGING
 			if (debug) {
 				printOccupied();
 			}
+*/
 		}
 	}
 
@@ -127,7 +129,7 @@ public class Tray {
 		}
 	}
 
-	public void printOccupied() {
+/*	public void printOccupied() {
 
 		for (int i = 0; i < trayHeight; i++) {
 			for (int j = 0; j < trayWidth; j++) {
@@ -143,11 +145,12 @@ public class Tray {
 		System.out.println("");
 
 	}
+*/
 
 	public void moveBlock (Block b, int row, int col) {
 		if (validMove(b, row, col)) {
 
-			for (int i = b.trow(); i <= b.brow(); i++) {
+/*		for (int i = b.trow(); i <= b.brow(); i++) {
 					for (int j = b.lcol(); j <= b.rcol(); j++) {
 						occupied[j + i*trayWidth] = null;
 						if (debug) {
@@ -162,12 +165,15 @@ public class Tray {
 						}
 				}
 			}
+*/
 
 			b.move(row, col);
 
-			if (debug) {
+/*		if (debug) {
 				printOccupied();
+
 			}
+*/
 		}
 	}
 
@@ -249,9 +255,9 @@ public class Tray {
 				if (block.trow() < 0 || block.brow() > trayHeight || block.lcol() < 0 || block.rcol() > trayWidth) {
 					throw new IllegalStateException("Block not in board");
 				}
-				if (!Arrays.asList(occupied).contains(block)) {
-					throw new IllegalStateException("Block incorrectly added");
-				}
+				//if (!Arrays.asList(occupied).contains(block)) {
+				//	throw new IllegalStateException("Block incorrectly added");
+				//}
 				//Integer[] coordinates = {Integer.valueOf(block.trow()), Integer.valueOf(block.lcol()), Integer.valueOf(block.brow()), Integer.valueOf(block.rcol())};
 				//visited[index] = coordinates;
 				for (Block otherBlock : blocks) {
@@ -269,7 +275,7 @@ public class Tray {
 					}
 				}
 			}
-			for (Block block : occupied) {
+			/*for (Block block : occupied) {
 				//System.out.println(blocks);
 				if (block != null) {
 					if (!blocks.contains(block)) {
@@ -277,6 +283,7 @@ public class Tray {
 					}
 				}
 			}
+			*/
 			if (!moveExists) {
 				throw new IllegalStateException("No valid moves");
 			}
@@ -285,7 +292,23 @@ public class Tray {
 
 	public ArrayList<Tray> posMoves() {
 		ArrayList<Tray> babies = new ArrayList<Tray>();
+		Block[] occupied = new Block[(trayWidth) * (trayHeight)];
 
+		for (Block b : blocks) {
+			//POPULATE MATRIX OF OCCUPIED SPACES
+			for (int i = b.trow(); i <= b.brow(); i++) {
+				for (int j = b.lcol(); j <= b.rcol(); j++) {
+					//System.out.println("i: " + i);
+					//System.out.println("j: " + j);
+					//System.out.println("index: " + (j + i*trayWidth));
+					//System.out.println("occupied.length: " + occupied.length);
+					//if (occupied[j + i*trayWidth] != null) {
+					//	throw new IllegalStateException("Cannot add block to occupied space.");
+					//}
+					occupied[j + i*trayWidth] = b;
+				}
+			}
+		}
 
 		for (int i = 0; i < occupied.length; i++) {
 			if (occupied[i] == null) {
@@ -447,10 +470,10 @@ public class Tray {
 		return trayHeight;
 	}
 	
-	public Block[] getOccupied ( ) {
+/*	public Block[] getOccupied ( ) {
 		return occupied;
 	}
-
+*/
 	public ArrayList<Block> getBlocks() {
 		return blocks;
 	}
