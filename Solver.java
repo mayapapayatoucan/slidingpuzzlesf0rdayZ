@@ -114,7 +114,7 @@ public class Solver {
 		trayQueue.add(t);
 		while (!trayQueue.isEmpty()) {
 			Tray dQ;
-			dQ = trayQueue.removeLast(); //dequeue
+			dQ = trayQueue.removeFirst(); //dequeue
 			//iterate through all the possible moves for dQ
 			ArrayList<Tray> moves = dQ.posMoves();
 			if (moves.isEmpty()) {
@@ -129,7 +129,6 @@ public class Solver {
 			}
 			for  (int k = 0; k < dQ.posMoves().size(); k++) {
 				if (moves.get(k).correctConfig()) {
-					System.out.println("Do the following move sequence: ");
 					moves.get(k).printMoves(); // not a method yet. want to print out all moves to this point
 					System.out.println("SOLVED!!");
 					System.exit(1);
