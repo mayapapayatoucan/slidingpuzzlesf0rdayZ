@@ -14,6 +14,27 @@ public class Tray {
 	private ArrayList<Block> goalBlocks = new ArrayList<Block>();
 	private ArrayList<Block> blocks = new ArrayList<Block>();
 
+	public int hashCode() {
+
+		int hash = 0;
+		int len = trayWidth * trayHeight;
+		//int cont = 0;
+
+		for (Block b : blocks) {
+
+			for (int i = b.trow(); i <= b.brow(); i++) {
+				for (int j = b.lcol(); j <= b.rcol(); j++) {
+
+
+					hash += (2 << (j + i*trayWidth)); //+ cont;
+			}
+			}
+
+		}
+
+		return hash;
+	}
+
 	public class Move {
 
 		private int row;
@@ -129,7 +150,18 @@ public class Tray {
 		}
 	}
 
-/*	public void printOccupied() {
+	public void printOccupied() {
+
+		Block[] occupied = new Block[(trayWidth) * (trayHeight)];
+
+		for (Block b : blocks) {
+			//POPULATE MATRIX OF OCCUPIED SPACES
+			for (int i = b.trow(); i <= b.brow(); i++) {
+				for (int j = b.lcol(); j <= b.rcol(); j++) {
+					occupied[j + i*trayWidth] = b;
+				}
+			}
+		}
 
 		for (int i = 0; i < trayHeight; i++) {
 			for (int j = 0; j < trayWidth; j++) {
@@ -145,7 +177,7 @@ public class Tray {
 		System.out.println("");
 
 	}
-*/
+
 
 	public void moveBlock (Block b, int row, int col) {
 		if (validMove(b, row, col)) {
@@ -298,13 +330,6 @@ public class Tray {
 			//POPULATE MATRIX OF OCCUPIED SPACES
 			for (int i = b.trow(); i <= b.brow(); i++) {
 				for (int j = b.lcol(); j <= b.rcol(); j++) {
-					//System.out.println("i: " + i);
-					//System.out.println("j: " + j);
-					//System.out.println("index: " + (j + i*trayWidth));
-					//System.out.println("occupied.length: " + occupied.length);
-					//if (occupied[j + i*trayWidth] != null) {
-					//	throw new IllegalStateException("Cannot add block to occupied space.");
-					//}
 					occupied[j + i*trayWidth] = b;
 				}
 			}
@@ -425,6 +450,7 @@ public class Tray {
 			moveStack.push(curr.prevMove);
 			curr = curr.prevTray;
 		}
+		moveStack.pop();
 		while (!moveStack.empty()) {
 			Move m;
 			m = moveStack.pop();
@@ -432,7 +458,10 @@ public class Tray {
 		}
 	}
 	
-	public boolean equals (Tray t) {
+	public boolean equals (Object o) {
+
+		Tray t = (Tray) o;
+
 		if ((height() != t.height()) || (width() != t.width())) {
 			return false;
 		}
