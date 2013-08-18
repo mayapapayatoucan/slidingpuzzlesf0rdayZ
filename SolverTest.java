@@ -7,7 +7,7 @@ public class SolverTest {
 
 	@Test
 	public void testParse() {
-		Solver s = new Solver();
+		Solver s = new Solver("test1.txt");   // not using contents of file, just needed for constructor
 		assertTrue(s.isBlock("0 0 0 0"));
 		assertFalse(s.isBlock("0000"));
 		assertFalse(s.isBlock(""));
