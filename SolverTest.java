@@ -7,7 +7,7 @@ public class SolverTest {
 
 	@Test
 	public void testParse() {
-		Solver s = new Solver("test1.txt");   // not using contents of file, just needed for constructor
+		Solver s = new Solver("test1.txt", "test1goal.txt");   // not using contents of file, just needed for constructor
 		assertTrue(s.isBlock("0 0 0 0"));
 		assertFalse(s.isBlock("0000"));
 		assertFalse(s.isBlock(""));
@@ -20,7 +20,7 @@ public class SolverTest {
 	
 	@Test
 	public void testInput() {
-		Solver s1 = new Solver("test1.txt");   // Figure 1 in the project documentation
+		Solver s1 = new Solver("test1.txt", "test1goal.txt");   // Figure 1 in the project documentation
 		assertEquals(5, s1.getTray().height());
 		assertEquals(4, s1.getTray().width());
 		assertTrue(s1.getTray().containsBlock(0, 0, 1, 0));
@@ -41,7 +41,7 @@ public class SolverTest {
 		assertTrue(s2.getTray().containsBlock(0, 1, 0, 1));
 		assertTrue(s2.getTray().containsBlock(1, 0, 1, 0));
 		assertTrue(s2.getTray().containsGoalBlock(1, 1, 1, 1));
-		Solver s3 = new Solver("big.block.1");
+		Solver s3 = new Solver("big.block.1", "big.block.1.goal");
 		assertEquals(3, s3.getTray().height());
 		assertEquals(4, s3.getTray().width());
 		assertTrue(s3.getTray().containsBlock(0, 0, 0, 1));
