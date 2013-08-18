@@ -8,6 +8,52 @@ import org.junit.Test;
 
 public class TrayTest {
 	
+	// tests addBlock and addGoalBlock
+	@Test
+	public void testAdd () {
+		Tray t1 = new Tray(5, 5);
+		Block b1 = new Block("1 1 2 2");
+		t1.addBlock(b1);
+		assertTrue(t1.getBlocks().contains(b1));
+		assertTrue(addBlockException(t1, b1));   // can't add same block twice
+		for (Block b : t1.getBlocks()) {
+			System.out.println("block: " + b.trow() + " " + b.lcol() + " " + b.brow() + " " + b.rcol());
+		}
+		if (t1.debug) {
+			Block b2 = new Block("0 1 1 1");
+			System.out.println("problem is here:");
+			assertTrue(addBlockException(t1, b2));   // top left corner of b1 is already occupied
+			t1.removeBlock(b2);
+			Block b3 = new Block("2 1 3 1");
+			assertTrue(addBlockException(t1, b3));   // bottom left corner of b1 is already occupied
+			t1.removeBlock(b3);
+			Block b4 = new Block("1 2 1 3");
+			assertTrue(addBlockException(t1, b4));   // top right corner of b1 is already occupied
+			t1.removeBlock(b4);
+			Block b5 = new Block("2 2 2 3");
+			assertTrue(addBlockException(t1, b5));   // bottom right corner of b1 is already occupied
+			t1.removeBlock(b5);
+		}
+		Block b6 = new Block("10 10 10 10");
+		assertTrue(addBlockException(t1, b6));   // block location isn't on the tray
+		t1.removeGoalBlock(b6);
+		Block b7 = new Block("4 4 4 4");
+		t1.addBlock(b7);
+		assertTrue(t1.getBlocks().contains(b1));
+		assertTrue(t1.getBlocks().contains(b7));
+		Block g1 = new Block("0 0 1 1");
+		t1.addGoalBlock(g1);
+		assertTrue(t1.getGoalBlocks().contains(g1));
+		assertTrue(addGoalBlockException(t1, g1));   // can't add same goal block twice
+		Block g2 = new Block("2 2 3 3");
+		t1.addGoalBlock(g2);   // goal block can be currently present on tray
+		assertTrue(t1.getGoalBlocks().contains(g1));
+		assertTrue(t1.getGoalBlocks().contains(g2));
+		Block g3 = new Block("10 10 10 10");
+		assertTrue(addGoalBlockException(t1, g3));   // block location isn't on the tray	
+		t1.removeGoalBlock(g3);
+	}
+	
 	@Test 
 	public void testIsOK() {
 		Tray t1 = new Tray(2, 2);
@@ -53,6 +99,15 @@ public class TrayTest {
 			return true;
 		}
 	}
+	
+	public boolean addGoalBlockException (Tray t, Block b) {
+		try {
+			t.addGoalBlock(b);
+			return false;
+		} catch (IllegalStateException e) {
+			return true;
+		}
+	}
 
 	public boolean isOKException (Tray t) {
 		try {
@@ -63,36 +118,6 @@ public class TrayTest {
 			return true;
 		}
 	}
-	
-	
-	// tests addBlock and addGoalBlock
-	@Test
-	public void testAdd () {
-		Tray t1 = new Tray(5, 5);
-		Block b1 = new Block("0 0 1 1");
-		t1.addBlock(b1);
-		assertTrue(t1.getBlocks().contains(b1));
-		assertTrue(addBlockException(t1, b1));   // can't add same block twice
-		Block b2 = new Block("1 1 1 1");
-		assertTrue(addBlockException(t1, b2));   // space is already occupied
-		Block b3 = new Block("10 10 10 10");
-		assertTrue(addBlockException(t1, b3));   // block location isn't on the tray
-		Block b4 = new Block("4 4 4 4");
-		t1.addBlock(b4);
-		assertTrue(t1.getBlocks().contains(b1));
-		assertTrue(t1.getBlocks().contains(b4));
-		Block g1 = new Block("1 1 2 2");
-		t1.addGoalBlock(g1);
-		assertTrue(t1.getGoalBlocks().contains(g1));
-		assertTrue(addBlockException(t1, g1));   // can't add same block twice
-		Block g2 = new Block("0 0 1 1");
-		t1.addGoalBlock(g2);   // goal block can be currently present on tray
-		assertTrue(t1.getGoalBlocks().contains(g1));
-		assertTrue(t1.getGoalBlocks().contains(g2));
-		Block g3 = new Block("10 10 10 10");
-		assertTrue(addBlockException(t1, g3));   // block location isn't on the tray		
-	}
-
 	
 	// tests containsBlock and containsGoalBlock
 	@Test
@@ -230,7 +255,7 @@ public class TrayTest {
 		assertFalse(t3.containsBlock(0, 2, 0, 2));
 	}
 	
-	@Test
+/*	@Test
 	public void testCopy() {
 
 		Tray t1 = new Tray(4, 3);
@@ -258,8 +283,9 @@ public class TrayTest {
 			t1.printOccupied();
 			t2.printOccupied();
 		}
-	}
+	} */
 
+	// no assertions, see print output
 	@Test
 	public void testPosMoves() {
 		Tray t1 = new Tray(4, 3);
@@ -274,10 +300,10 @@ public class TrayTest {
 		t1.addBlock(b4);
 		t1.addBlock(b5);
 
-		t1.printOccupied();
+		//t1.printOccupied();
 		ArrayList<Tray> babies = t1.posMoves();
 		for(Tray b : babies) {
-			b.printOccupied();
+			//b.printOccupied();
 		}
 		
 		Tray t2 = new Tray(5, 4);
@@ -287,11 +313,11 @@ public class TrayTest {
 		t2.addBlock(b6);
 		t2.addBlock(b7);
 		t2.addBlock(b8);
-		t2.printOccupied();
+		//t2.printOccupied();
 		ArrayList<Tray> moreBabies = t2.posMoves();
 		System.out.println("Moves are:");
 		for (Tray t3: moreBabies) {
-			t3.printOccupied();
+			//t3.printOccupied();
 		}
 
 	}
