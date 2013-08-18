@@ -10,11 +10,14 @@ Winston Huang
 
 public class Solver {
 
+	//tray to solve
 	private Tray initTray;
-	public boolean debug;
-	public boolean debugStack;
 
-	//create a new solver. Solver takes two string arguments: an initial configuration file name,
+	//debugging flags
+	public boolean debug = false;
+	public boolean debugStack = false;
+
+	//Create a new solver. Solver takes two string arguments: an initial configuration file name,
 	//and a goal configuration file name.
 	public Solver (String fileName, String goalName) {
 
@@ -23,22 +26,23 @@ public class Solver {
 		String s = initFile.readLine();
 
 		makeTray(s);   // first line sets up the tray dimensions
-		while (true) {
 
+		while (true) {
 			s = initFile.readLine();   // making blocks
 
 			if (s == null) {
 				break;
-			}
-			Parse(s);
+			}		
+
+			if (isBlock(s)) {
+				initTray.addBlock(new Block(s));
+			} 
 		}
 		
 		//Read goal configuration file.
 		InputSource goalFile = new InputSource(goalName);
 		while (true) {
-
 			s = goalFile.readLine();   // making blocks
-
 			if (s == null) {
 				break;
 			}
@@ -48,6 +52,7 @@ public class Solver {
 		}
 	}
 
+	//Make a tray. String consists of row and column dimensions, separated by a space.
 	public void makeTray (String s) {
 		String[] dimensions = s.split(" ");
 
@@ -64,43 +69,7 @@ public class Solver {
 
 	}
 
-	public void Parse (String line) {
-
-		if (isBlock(line)) {
-			initTray.addBlock(new Block(line));
-		} 
-
-		else if (line.substring(0, 2).equals("-o")) {
-			
-			String debugCommand = line.substring(2, line.length());
-			
-			if ("options".equals(debugCommand)) {
-				System.out.println("Debugging options:");
-				System.out.println("-oblock: " + "prints debugging output for blocks");
-				System.out.println("-otray: " + "prints debugging output for trays");
-				System.out.println("-osorter: " + "prints debugging output for the sorter");
-			}
-
-			if ("block".equals(debugCommand)) {
-				for (Block block : initTray.getBlocks()) {
-					block.debug = true;
-				}
-			}
-
-			if ("tray".equals(debugCommand)) {
-				initTray.debug = true;
-			}
-
-			if ("solver".equals(debugCommand)) {
-				debug = true;
-			}
-
-			System.out.println("Not a valid debugging option. Type -ooptions to see all debugging options.");
-			System.exit(1);
-
-		}
-	}
-
+	//Returns if string corresponds to a valid block.
 	public boolean isBlock (String line) {
 		String[] vals = line.split(" ");
 		if (vals.length != 4) {
@@ -120,21 +89,22 @@ public class Solver {
 		return initTray;
 	}
 
-	public void solve () {
+	//Solve the puzzle.
+	public void solve() {
 
 		if (initTray.correctConfig()) {
-			System.exit(0);//puzzle is solved
+			System.exit(0);   //puzzle is solved
 		}
 
-		HashSet<Tray> visited = new HashSet<Tray>();//set of trays that have been seen
-		LinkedList<Tray> process = new LinkedList<Tray>();//stack of trays to process
+		HashSet<Tray> visited = new HashSet<Tray>();   //set of trays that have been seen
+		LinkedList<Tray> process = new LinkedList<Tray>();   //stack of trays to process
 
 		process.add(initTray);
 		visited.add(initTray);
 
 		while (!process.isEmpty()) {
 
-			//DEBUG print stack size of trays to process on each iteration
+			//DEBUG - print stack size of trays to process on each iteration
 			if (debugStack) {
 				System.out.println("Solving...stack size: " + process.size());
 			}
@@ -146,22 +116,22 @@ public class Solver {
 					System.exit(1);
 			}
 
-			for  (Tray m : curr.posMoves()) {//process possible moves from current tray
+			for  (Tray m : curr.posMoves()) {   //process possible moves from current tray
 
-				if (m.correctConfig()) {//if the puzzle is solved:
+				if (m.correctConfig()) {   //if the puzzle is solved:
 					m.printMoves(); 
 					System.exit(0);
 				}
 
-				if (!visited.contains(m)) {//if this configuration has not been seen:
-					visited.add(m); // add the tray to the visited hashset.
-					process.addFirst(m); // add to stack
+				if (!visited.contains(m)) {   //if this configuration has not been seen:
+					visited.add(m);   // add the tray to the visited hashset.
+					process.addFirst(m);   // add to stack
 				}
 
 			}
 		}
 
-		System.exit(1); //this happens if there is no solution 
+		System.exit(1);   //this happens if there is no solution 
 	}
 
 	public static void main(String[] args) {
@@ -183,7 +153,7 @@ public class Solver {
 
 			Solver run = new Solver(args[1], args[2]);
 
-			else if ("tray".equals(debugCommand)) {
+			if ("tray".equals(debugCommand)) {
 				run.getTray().debug = true;
 			}
 
