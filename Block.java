@@ -1,6 +1,13 @@
 import java.awt.*;
 import java.util.*;
 
+/* AUTHORS:
+Zach Gottesman
+Brad Slaughter
+Maya Kulkarni
+Winston Huang
+
+*/
 
 public class Block {
 	
