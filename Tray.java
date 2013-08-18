@@ -112,42 +112,37 @@ public class Tray {
 
 	public void addBlock (Block b) {
 		if (b != null){
-
+			if (blocks.contains(b)) {
+				throw new IllegalStateException("Block already in tray.");
+			}
 			if ((b.brow() >= trayHeight) || (b.rcol() >= trayWidth)) {
 				throw new IllegalStateException("Block cannot be added outside tray dimensions.");
 			}
-
-/*
-			//POPULATE MATRIX OF OCCUPIED SPACES
-			for (int i = b.trow(); i <= b.brow(); i++) {
-				for (int j = b.lcol(); j <= b.rcol(); j++) {
-					//System.out.println("i: " + i);
-					//System.out.println("j: " + j);
-					//System.out.println("index: " + (j + i*trayWidth));
-					//System.out.println("occupied.length: " + occupied.length);
-					if (occupied[j + i*trayWidth] != null) {
-						throw new IllegalStateException("Cannot add block to occupied space.");
-					}
-					occupied[j + i*trayWidth] = b;
-				}
-			}
-
-*/
 			blocks.add(b);
-
-
-/*		//FOR DEBUGGING
-			if (debug) {
-				printOccupied();
-			}
-*/
 		}
 	}
 
 	public void addGoalBlock (Block b) {
-		if (b != null) {
-			goalBlocks.add(b);
+		if (goalBlocks.contains(b)) {
+			throw new IllegalStateException("Goal block already in tray.");
 		}
+		if (b != null) {
+
+			if ((b.brow() >= trayHeight) || (b.rcol() >= trayWidth)) {
+				throw new IllegalStateException("Goal block cannot be added outside tray dimensions.");
+			}
+			
+			goalBlocks.add(b);
+			isOK();   // make sure adding the block isOK
+		}
+	}
+	
+	public void removeBlock (Block b) {
+		blocks.remove(b);
+	}
+	
+	public void removeGoalBlock (Block b) {
+		goalBlocks.remove(b);
 	}
 
 	public void printOccupied() {
@@ -283,6 +278,7 @@ public class Tray {
 			if (blocks.size() < goalBlocks.size()) {
 				throw new IllegalStateException("More goal blocks than blocks on the board");
 			}
+			Block[] occupied = new Block[trayWidth*trayHeight];
 			for (Block block : blocks) {
 				if (block.trow() < 0 || block.brow() > trayHeight || block.lcol() < 0 || block.rcol() > trayWidth) {
 					throw new IllegalStateException("Block not in board");
@@ -297,6 +293,22 @@ public class Tray {
 					//System.out.println("otherBlock: " + otherBlock);
 					if (!(otherBlock == block) && block.overlapping(otherBlock.trow(), otherBlock.lcol(), otherBlock.brow(), otherBlock.rcol())) {
 						throw new IllegalStateException("Two blocks are in the same location");
+					}
+				}
+				for (int i = block.trow(); i <= block.brow(); i++) {
+					for (int j = block.lcol(); j <= block.rcol(); j++) {
+						//System.out.println("i: " + i);
+						//System.out.println("j: " + j);
+						//System.out.println("index: " + (j + i*trayWidth));
+						//System.out.println("occupied.length: " + occupied.length);
+						if (occupied[j + i*trayWidth] != null) {
+							if (debug) {
+								Block curr = occupied[j + i*trayWidth];
+								System.out.println("overlapping block: " + curr.trow() + " " + curr.lcol() + " " + curr.brow() + " " + curr.rcol());
+							}
+							throw new IllegalStateException("Cannot add block to occupied space.");
+						}
+						occupied[j + i*trayWidth] = block;
 					}
 				}
 				for (int i = block.trow() - 1; i < block.brow() + 1; i++) {
