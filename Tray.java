@@ -11,6 +11,7 @@ Winston Huang
 
 public class Tray {
 
+	//debugging flags
 	public boolean debug = false;
 	public boolean debugPosMoves = false;
 	public boolean debugValidMove = false;
@@ -78,11 +79,8 @@ public class Tray {
 	}
 
 	public Tray(int numRows, int numCols) {
-
 		trayHeight = numRows;
 		trayWidth = numCols;
-
-
 	}
 
 	private void setPrevMove (Move m) {
@@ -91,10 +89,7 @@ public class Tray {
 
 	private void setPrevTray (Tray t) {
 		prevTray = t;
-		//System.out.println("SetPrevTray method: ");
-		//System.out.println(prevTray);
 	}
-
 
 	public void addBlock (Block b) {
 		if (b != null){
@@ -123,6 +118,7 @@ public class Tray {
 		}
 	}
 	
+	// for debugging purposes
 	public void removeBlock (Block b) {
 		blocks.remove(b);
 	}
@@ -163,6 +159,7 @@ public class Tray {
 		if (validMove(b, row, col)) {
 			b.move(row, col);
 		}
+		isOK();
 	}
 
 	public boolean containsBlock (int topRow, int leftCol, int bottomRow, int rightCol) {
@@ -185,6 +182,7 @@ public class Tray {
 		copyTray.debug = debug;
 		copyTray.debugPosMoves = debugPosMoves;
 		copyTray.debugValidMove = debugValidMove;
+		isOK();
 
 		return copyTray;
 	}
@@ -253,40 +251,38 @@ public class Tray {
 
 	public void isOK() {
 		if (debug) {
-			//Integer[][] visited = new Integer[blocks.size()][4];
-			//int index = 0;
+
 			boolean moveExists = false;
+
 			if (blocks.size() < goalBlocks.size()) {
 				throw new IllegalStateException("More goal blocks than blocks on the board");
 			}
+
 			Block[] occupied = new Block[trayWidth*trayHeight];
+
 			for (Block block : blocks) {
+
 				if (block.trow() < 0 || block.brow() > trayHeight || block.lcol() < 0 || block.rcol() > trayWidth) {
 					throw new IllegalStateException("Block not in board");
 				}
+
 				for (Block otherBlock : blocks) {
-					//System.out.println("block: " + block);
-					//System.out.println("otherBlock: " + otherBlock);
 					if (!(otherBlock == block) && block.overlapping(otherBlock.trow(), otherBlock.lcol(), otherBlock.brow(), otherBlock.rcol())) {
 						throw new IllegalStateException("Two blocks are in the same location");
 					}
 				}
+
 				for (int i = block.trow(); i <= block.brow(); i++) {
 					for (int j = block.lcol(); j <= block.rcol(); j++) {
-						//System.out.println("i: " + i);
-						//System.out.println("j: " + j);
-						//System.out.println("index: " + (j + i*trayWidth));
-						//System.out.println("occupied.length: " + occupied.length);
 						if (occupied[j + i*trayWidth] != null) {
-							if (debug) {
-								Block curr = occupied[j + i*trayWidth];
-								System.out.println("overlapping block: " + curr.trow() + " " + curr.lcol() + " " + curr.brow() + " " + curr.rcol());
-							}
+							Block curr = occupied[j + i*trayWidth];
+							System.out.println("overlapping block: " + curr.trow() + " " + curr.lcol() + " " + curr.brow() + " " + curr.rcol());
 							throw new IllegalStateException("Cannot add block to occupied space.");
 						}
 						occupied[j + i*trayWidth] = block;
 					}
 				}
+
 				for (int i = block.trow() - 1; i < block.brow() + 1; i++) {
 					for (int j = block.lcol() - 1; j < block.rcol() + 1; j++) {
 						if (validMove(block, i, j)) {
@@ -295,15 +291,7 @@ public class Tray {
 					}
 				}
 			}
-			/*for (Block block : occupied) {
-				//System.out.println(blocks);
-				if (block != null) {
-					if (!blocks.contains(block)) {
-						throw new IllegalStateException("Block incorrectly added");
-					}
-				}
-			}
-			*/
+
 			if (!moveExists) {
 				throw new IllegalStateException("No valid moves");
 			}
@@ -315,7 +303,7 @@ public class Tray {
 		Block[] occupied = new Block[(trayWidth) * (trayHeight)];
 
 		for (Block b : blocks) {
-			//POPULATE MATRIX OF OCCUPIED SPACES
+			//populate
 			for (int i = b.trow(); i <= b.brow(); i++) {
 				for (int j = b.lcol(); j <= b.rcol(); j++) {
 					occupied[j + i*trayWidth] = b;
@@ -334,10 +322,10 @@ public class Tray {
 					System.out.println("EMPTY SPACE AT " + row + ", " + col);
 				}
 
-				//CHECK ABOVE
+				//Check above
 				if (i - trayWidth >= 0) {
 					Block b = occupied[i - trayWidth];
-					if (b != null && validMove(b, row - b.height(), col)){
+					if (b != null && validMove(b, row - b.height(), col)) {
 						Tray t = this.copy();
 						t.setPrevTray(this);
 						Move pMove = new Move(b.trow(), b.lcol(), row - b.height(), col);
@@ -354,7 +342,7 @@ public class Tray {
 
 				//Check below
 				if (i + trayWidth < occupied.length) {
-					if (validMove(occupied[i + trayWidth], row, col)){
+					if (validMove(occupied[i + trayWidth], row, col)) {
 						Tray t = this.copy();
 						t.setPrevTray(this);
 						Move pMove = new Move(occupied[i + trayWidth].trow(), occupied[i + trayWidth].lcol(), row, col);
@@ -370,7 +358,7 @@ public class Tray {
 				//Check if left
 				if (i%trayWidth != 0)	{
 					Block b = occupied[i-1];
-					if (b != null && validMove(b, row, col - b.width())){
+					if (b != null && validMove(b, row, col - b.width())) {
 						Tray t = this.copy();
 						t.setPrevTray(this);
 						Move pMove = new Move(b.trow(), b.lcol(), row, col - b.width());
@@ -387,7 +375,7 @@ public class Tray {
 				}
 
 				//Check if right
-				if (i%trayWidth != trayWidth -1)	{
+				if (i%trayWidth != trayWidth -1) {
 					if (validMove(occupied[i + 1], row, col)) {
 						Tray t = this.copy();
 						t.setPrevTray(this);
@@ -414,7 +402,7 @@ public class Tray {
 		return babies;
 	}
 
-	// used to give answer for solved puzzle
+	// used when giving answer for solved puzzle
 	public void printMoves ( ) {
 		Stack<Move> moveStack = new Stack<Move>();
 		Tray curr = this;
@@ -430,6 +418,7 @@ public class Tray {
 		}
 	}
 	
+	//Returns true if this and tray to compare have the same configuration.
 	public boolean equals (Object o) {
 
 		Tray t = (Tray) o;
@@ -441,10 +430,12 @@ public class Tray {
 			t.printOccupied();
 		}
 
-		if ((height() != t.height()) || (width() != t.width())) {
+		if ((height() != t.height()) || (width() != t.width())) {   // trays are different sizes
 			return false;
 		}
-		boolean inOther;
+
+		boolean inOther;   // true if a block in the current tray is in the tray to be compared
+
 		for (Block block : blocks) {
 			inOther = false;
 			for (Block otherBlock : t.getBlocks()) {
@@ -453,7 +444,7 @@ public class Tray {
 				}
 			}
 			if (!inOther) {
-				return false;
+				return false;   // block in current tray isn't in tray to be compared
 			}
 		}
 		for (Block block : t.getBlocks()) {
@@ -464,7 +455,7 @@ public class Tray {
 				}
 			}
 			if (!inOther) {
-				return false;
+				return false;   // block in tray to be compared isn't in current tray
 			}
 		}
 		return true;
